@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>prestij.alan.22</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>prestij.4</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kocaeli Acil Toplanma Alanları - Kategori Ağırlıklı Prestij Puanı</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100vh; width: 100vw;
+    font-family: Arial, sans-serif;
+  }
+  #map { height: 100%; width: 100%; }
+  h2 {
+    margin: 10px 0 5px 0;
+    font-size: 1.3rem;
+  }
+  #prestigious-list {
+    position: absolute;
+    top: 10px; left: 10px;
+    max-height: 90vh;
+    width: 320px;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.95);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 1000;
+  }
+  #prestigious-list ul {
+    padding-left: 18px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  #prestigious-list li {
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+  <div id="map" role="region" aria-label="Harita"></div>
+  <div id="prestigious-list" aria-live="polite" aria-label="Prestijli Alanlar Listesi">
+    <h2>Otomatik Belirlenen Prestijli Alanlar</h2>
+    <p>Harita üzerindeki kırmızı daireler prestijli alanları göstermektedir.</p>
+    <div id="prestigious-areas-content">Hesaplanıyor...</div>
+  </div>
+
+<script>
+  // Örnek veriler (her kategoriden 3'er örnek)
+ const locations = [
+      //Gölcük
+ 
+  
+
+  { "name": "Park Alanı", "lat": 40.7172548694037, "lng": 29.78909339010999 },
+  { "name": "Park Alanı", "lat": 40.7133880219485, "lng": 29.78802166403037 },
+  
+  { "name": "Goncagüller Anaokulu", "lat": 40.71291219028602, "lng": 29.79250164225601 },
+  { "name": "Park Alanı", "lat": 40.71577702334141, "lng": 29.793566655128203 },
+  { "name": "Park Alanı", "lat": 40.71681065303912, "lng": 29.80099924272513 },
+  { "name": "Topçular Parkı", "lat": 40.71477802889666, "lng": 29.80315730896455 },
+  { "name": "Park Alanı", "lat": 40.706561594331376, "lng": 29.80843754746126 },
+  
+  
+  { "name": "Cumhuriyet Parkı", "lat": 40.717753328010666, "lng": 29.824245924826403 },
+  { "name": "Barbaros Hayrettin Lisesi Ve Park", "lat": 40.72075000137805, "lng": 29.83332641191457 },
+  { "name": "Kbb Barbaros Hayrettin Parkı", "lat": 40.72107689698809, "lng": 29.839384578932357 },
+  { "name": "Gölcük Mesleki Ve Teknik Anadolu Lisesi", "lat": 40.71608601968252, "lng": 29.83591917243865 },
+  { "name": "Tersane İlkokulu", "lat": 40.71316602821474, "lng": 29.82294133464367 },
+  { "name": "Park Alanı", "lat": 40.70731683998005, "lng": 29.83199555750598 },
+  { "name": "Park Alanı", "lat": 40.70766782517725, "lng": 29.82974668011204 },
+  { "name": "Çağlayan Parkı", "lat": 40.69974691631622, "lng": 29.82112888725091 },
+  
+  { "name": "Park Alanı", "lat": 40.69506946287389, "lng": 29.830068848758096 },
+  { "name": "Şehit Ömer Burak Öğüt Park Alanı", "lat": 40.703413126154736, "lng": 29.83222603795689 },
+ 
+  { "name": "Stad Ve Pazar Alanı", "lat": 40.70236186081546, "lng": 29.85274220912267 },
+  { "name": "Narlı Park Alanı", "lat": 40.70147636874806, "lng": 29.855422133360275 },
+  { "name": "Yeşil Alan", "lat": 40.70166407072455, "lng": 29.852595070526704 },
+  { "name": "Park Alanı", "lat": 40.7014561757093, "lng": 29.853954265891332 },
+  { "name": "Park Alanı", "lat": 40.69249178112259, "lng": 29.833379044082243 },
+  { "name": "Park Alanı", "lat": 40.76482419035106, "lng": 29.858209296652888 },
+  { "name": "Park Alanı", "lat": 40.71002489746862, "lng": 29.846569746160647 },
+  { "name": "Park Alanı", "lat": 40.702548146019126, "lng": 29.83950335555621 },
+  { "name": "Park Alanı", "lat": 40.71134712455087, "lng": 29.84489659675348 },
+ 
+  { "name": "Park Alanı", "lat": 40.68801032792825, "lng": 29.854427074327756 },
+      
+      
+      
+      
+      
+      //Kartepe
+      
+       { "name": "Fatih Sultan Mehmet Mah. Gençlik Parkı", "lat": 40.71473698733573, "lng": 30.11735389529803 },
+  { "name": "Başaran Parkı", "lat": 40.68995133451346, "lng": 30.02362978214384 },
+  { "name": "Arslanbey Ortaokulu", "lat": 40.69059371970588, "lng": 30.030540805488474 },
+  { "name": "Yağmur Sok Parkı", "lat": 40.7391970278026, "lng": 30.05033704035794 },
+  { "name": "Ataevler Kültür Merkezi Parkı", "lat": 40.7444506681638, "lng": 30.04636633494153 },
+  { "name": "Eşref Uslu İlkokulu", "lat": 40.742196017223996, "lng": 30.03863463587451 },
+  { "name": "Ataşehir Stadyumu", "lat": 40.70635553163117, "lng": 30.023207235356082 },
+  { "name": "(Şht.Polis Volkan Sabaz) Taç Yaprak Parkı", "lat": 40.70572673280202, "lng": 30.018350293126534 },
+  { "name": "Balaban İlkokulu", "lat": 40.693426827491116, "lng": 30.087395800923332 },
+  { "name": "Suadiye İlkokulu", "lat": 40.69281854150385, "lng": 30.050164579625836 },
+  { "name": "Muhtar Turhan Yılmaz Parkı", "lat": 40.507664997469504, "lng": 29.658388006362298 },
+  { "name": "Şehit Er Mecit Demir Parkı", "lat": 40.760216335335116, "lng": 30.02066651753382 },
+  { "name": "Kanalpark", "lat": 40.75750157930916, "lng": 30.02326658537371 },
+  { "name": "Konak Gençlik Parkı", "lat": 40.74707269192283, "lng": 30.05910095674713 },
+  { "name": "Dürdane Özdilek İlkokulu", "lat": 40.7447440163214, "lng": 30.062028103511746 },
+  { "name": "Haydar Aliyev Parkı", "lat": 40.75474852426773, "lng": 30.041930107596773 },
+  { "name": "Kartepe Anadolu İmamhatip Lisesi", "lat": 40.75818241293973, "lng": 30.034359161288766 },
+  { "name": "Eşme Ahmediye İlkokulu Bahçesi", "lat": 40.768414534369775, "lng": 30.237497234898825 },
+  { "name": "Eşme İlkokulu", "lat": 40.73559434448129, "lng": 30.225029880530467 },
+  { "name": "15 Temmuz Demokrasi Parkı", "lat": 40.74439910316966, "lng": 30.020953075072214 },
+  { "name": "Kartepe Mesleki Ve Teknik Anadolu Lisesi", "lat": 40.746984320878596, "lng": 30.01409903558212 },
+  { "name": "Kent Meydanı", "lat": 40.73355573396685, "lng": 30.03046590453942 },
+  { "name": "57. Alay Parkı", "lat": 40.73745559284847, "lng": 30.11518963556145 },
+  { "name": "Meşelik Parkı", "lat": 40.749281394498695, "lng": 30.027337285156587 },
+  { "name": "İstasyon İlkokulu", "lat": 40.753489250406616, "lng": 30.01530162011805 },
+  { "name": "Karatepe İlkokulu", "lat": 40.69117420024375, "lng": 30.009830603322975 },
+  { "name": "Hacı Halim Karslı İlkokulu", "lat": 40.75101781297343, "lng": 29.993291553055556 },
+  { "name": "Pakmaya Ortaokulu", "lat": 40.73738646983518, "lng": 30.006228065963064 },
+  { "name": "Pirelli Anadolu Lisesi", "lat": 40.73795266157919, "lng": 30.006787395962093 },
+  { "name": "Kültür Parkı", "lat": 40.70569139951056, "lng": 30.13632725509564 },
+  { "name": "Maşukiye Anadolu Lisesi", "lat": 40.699474668876114, "lng": 30.137642455774433 },
+  { "name": "Nusretiye İlkokulu", "lat": 40.6962550214094, "lng": 30.094775993418207 },
+  { "name": "Rahmiye Pınarbaşı Parkı", "lat": 40.715905942846206, "lng": 30.02119558971411 },
+  { "name": "Süleyman Şah İlkokulu", "lat": 40.72661493578942, "lng": 30.015592762846282 },
+  { "name": "Hergeleci İbrahim Er Meydanı", "lat": 40.72887520667119, "lng": 30.05061417932109 },
+  { "name": "Sarımeşe İlkokulu", "lat": 40.72939308603253, "lng": 30.04130892217021 },
+  { "name": "Barbaros İlkokulu", "lat": 40.693151908370005, "lng": 30.060567265043748 },
+  { "name": "Hüseyin Üzülmez Parkı", "lat": 40.69108467640518, "lng": 30.035500035666864 },
+  { "name": "Şirinsulhiye İlkokulu", "lat": 40.70312310634085, "lng": 30.100752286771673 },
+  { "name": "Uzunbey Gençlik Parkı", "lat": 40.76239256094122, "lng": 30.05109278344411 },
+  { "name": "Uzunçiftlik Kalıcı Konutlar Spor Tesisi", "lat": 40.75008301489244, "lng": 30.066686619250174 },
+  { "name": "Hacı İbrahim Parkı", "lat": 40.75024088316306, "lng": 30.068406591280592 },
+  { "name": "Şehit Fatih Karagöz Spor Kompleksi", "lat": 40.734985424066465, "lng": 30.14162592883576 },
+      
+      
+      //İZMİT
+  { "name": "Anıtpark", "lat": 40.766152905953334, "lng": 29.94161679723574 },
+  { "name": "Fevzi Çakmak İlkokulu", "lat": 40.76839159926137, "lng": 29.94632103950951 },
+  { "name": "29 Ekim Ortaokulu", "lat": 40.789827747495394, "lng": 29.94837876771453 },
+      
+      
+      
+      
+      //Başiskele
+      
+{name: "Kullar Meydan Otopark Üstü", lat: 40.72352027100772, lng: 29.99115412606211},
+{name: "Yuvacık KOÜ Diş Hekimliği Fakültesi", lat: 40.70809810535862, lng: 29.975147272725927},
+{name: "Ömer Halisdemir Spor Tesisi", lat: 40.7020998766649, lng: 29.994193850785948},
+{name: "Şehit İlyas Bayraktutar Spor Tesisi", lat: 40.70507343664465, lng: 29.98164418517675},
+
+{name: "Yeşilyurt Kapalı Pazar", lat: 40.71972159169663, lng: 29.956695574744955},
+{name: "Park", lat: 40.689602122366466, lng: 29.95803999499978},
+{name: "Kullar Kapalı Pazar Alanı", lat: 40.72273737297782, lng: 29.987096158117403},
+{name: "Yuvacık Serdar İlkokulu", lat: 40.70914043535572, lng: 29.94450350898046},
+{name: "Fatih Sultan Mehmet Parkı", lat: 40.71117851093559, lng: 29.94520600171474},
+{name: "Bahçecik Spor Tesisi", lat: 40.66501686572999, lng: 29.909450913661974},
+{name: "Bahçecik Seymen İlkokulu", lat: 40.71171531354959, lng: 29.908415855970297},
+{name: "Muhsin Yazıcıoğlu Parkı", lat: 40.705706035999455, lng: 29.90224435720331},
+
+{name: "Yeniköy Kapalı (Hanlı) Pazar", lat: 40.70060269870899, lng: 29.88494280037027},
+{name: "Sepetlipınar İlk ve Ortaokulu", lat: 40.711141190028826, lng: 29.870529199250427},
+{name: "Yeniköy Denizdibi İlk ve Ortaokulu", lat: 40.70341434069229, lng: 29.889353698806325},
+{name: "Bahçecik Damlar İlkokulu", lat: 40.69409595288792, lng: 29.919804257534178},
+{name: "İbrahim Gencer Millet Bahçesi", lat: 40.6911998802943, lng: 29.91513708077941},
+{name: "Misakı Milli İÖO ve Sağlık Tesisi Alanı", lat: 40.69540919929371, lng: 29.946308763683554},
+{name: "Döngel Mustafa Çakır Millet Bahçesi", lat: 40.70328193814415, lng: 29.935513496607477},
+{name: "Kullar Spor Tesisi", lat: 40.72993013959868, lng: 29.993526877160452},
+{name: "Şehit Binbaşı Arslan Kulaksız Spor Tesisi", lat: 40.706155270837286, lng: 29.925818752403178},
+{name: "Barbaros Mah. Semt Meydanı", lat: 40.71087699976443, lng: 29.929573411816406},
+      
+      
+      
+      //Karamürsel
+  { "name": "Güzelkıyı İlkokulu", "lat": 40.70103586688632, "lng": 29.657013071164155 },
+  { "name": "Güreş Alanı Ve Futbol Sahası", "lat": 40.691531619527666, "lng": 29.618951167835714 },
+  { "name": "Atatürk 100.Yıl Spor Salonu", "lat": 40.69323209885805, "lng": 29.62700553077201 },
+  { "name": "Akçakoca İmam Hatip Lisesi", "lat": 40.691589338714095, "lng": 29.626205882817658 },
+  { "name": "Hüseyin Güldal Ortaokulu", "lat": 40.686978603233314, "lng": 29.620999235550688 },
+  { "name": "Nazmi Oğuz Ortaokulu", "lat": 40.68828236916269, "lng": 29.60374113558209 },
+  { "name": "Dr. Pembe Müjgan Calp Lisesi", "lat": 40.684723711754415, "lng": 29.589170028291026 },
+  { "name": "Muharrem Erdoğan Spor Tesisleri", "lat": 40.69226950795191, "lng": 29.604395371307515 },
+  { "name": "Birey Koleji", "lat": 40.68751681182296, "lng": 29.57405593868705 },
+  { "name": "Gazanfer Bilge İlkokulu", "lat": 40.68213273196117, "lng": 29.55635617787021 },
+  { "name": "Kızderbent İlkokulu", "lat": 40.556109575372986, "lng": 29.514721336073876 },
+  { "name": "Matematik Parkı", "lat": 40.695492984770794, "lng": 29.643027634958607 },
+  
+      
+      
+      //Kandıra
+  { "name": "M.Akif Ersoy İlkokulu", "lat": 41.072483414693586, "lng": 30.157815016786348 },
+  { "name": "Kandıra Anadolu Lisesi", "lat": 41.06825022666759, "lng": 30.153641380005183 },
+  { "name": "Zafer İlkokulu Ve Abdulsamet Özen Ortaokulu", "lat": 41.07324852790087, "lng": 30.14673900741359 },
+  
+  { "name": "Tasvire Hurşit Güneş Ortaokulu", "lat": 41.06519690000003, "lng": 30.14967361064052 },
+  { "name": "Mehmet Sarıcan İlçe Stadı", "lat": 41.065706200422966, "lng": 30.1508689821949 },
+
+  { "name": "Akçaova İlkokulu", "lat": 41.0377566471195, "lng": 29.956269788629083 },
+  { "name": "Bağırganlı İlkokulu", "lat": 41.123436233781646, "lng": 30.01168806060654 },
+  { "name": "Ballar İlkokulu", "lat": 41.14576602721831, "lng": 30.270820809708177 },
+  { "name": "Kaymaz Araman İlkokulu", "lat": 40.92660169052748, "lng": 30.26502323622483 },
+  { "name": "Araman Kültür Merkezi", "lat": 40.92106109426904, "lng": 30.267725160366957 },
+  { "name": "Çerçili Sefa Sirmen İlkokulu", "lat": 41.049512684780055, "lng": 30.011717621893503 },
+  { "name": "Eğercili Namık Kemal İlkokulu", "lat": 40.994674345394294, "lng": 30.023066992067143 },
+  { "name": "Kandıra Bozburun İlkokulu", "lat": 41.020103933948526, "lng": 30.214393917407776 },
+  { "name": "Kandıra Çamkonak İlkokulu", "lat": 41.17398622593937, "lng": 30.30550565615437 },
+  { "name": "Karaağaç İlkokulu", "lat": 41.14441063872992, "lng": 30.3176472875132 },
+  { "name": "Karaağaç Kültür Merkezi", "lat": 41.144563535413845, "lng": 30.30293416725285 },
+  { "name": "Kefken Şehit Oğuz Kır İlkokulu", "lat": 41.16770539038204, "lng": 30.230210745019644 },
+  { "name": "Şehit Er Ahsen Budak İlkokulu", "lat": 40.994541658308876, "lng": 30.172219370716498 },
+  { "name": "Kocakaymaz Yunus Emre İlkokulu", "lat": 40.932922261517035, "lng": 30.101784437250878 },
+  { "name": "Özbey İlkokulu", "lat": 41.09359350935331, "lng": 30.24225181423632 },
+  { "name": "Safalı İlkokulu", "lat": 41.085517780088566, "lng": 30.081737714750325 },
+  { "name": "Seyitaliler Atatürk İlkokulu", "lat": 40.97375330172971, "lng": 30.19759415340744 },
+  { "name": "Şerefsungur Kültür Merkezi", "lat": 40.97283879220671, "lng": 30.02513641321666 },
+  { "name": "Pınardüzü Kültür Merkezi", "lat": 41.1171788578405, "lng": 30.30673267084854 },
+  { "name": "Yusufça Şehit İrfan Yaman İlkokulu", "lat": 41.02514616989909, "lng": 30.125482018389818 },
+      
+      
+      
+      
+      //Derince
+  { "name": "Nenehatun İlk Ve Orta Okulu", "lat": 40.77299305389504, "lng": 29.84367660238609 },
+  { "name": "Millet Bahçesi", "lat": 40.76317209769062, "lng": 29.85391336859152 },
+  { "name": "Park Alanı (5139/1 İn Güneyi)", "lat": 40.77083878555178, "lng": 29.836803568466415 },
+  { "name": "Beyaz Gül Taki Park", "lat": 40.774930539303696, "lng": 29.83269702352246 },
+ 
+  { "name": "Park Alanı (2381/1)", "lat": 40.77129245916668, "lng": 29.850825128859935 },
+  { "name": "Park Alanı (2371/1)", "lat": 40.77154861723248, "lng": 29.845865753154616 },
+  { "name": "Menderes Parkı", "lat": 40.77151745056753, "lng": 29.848706517812538 },
+  { "name": "19 Ağustos Parkı", "lat": 40.77242533083871, "lng": 29.84934574833905 },
+ 
+  { "name": "Derince Kent Meydanı", "lat": 40.757588217445274, "lng": 29.830845823805216 },
+  { "name": "Kipa Avm Otoparkı (5021/1)", "lat": 40.758579479682055, "lng": 29.85053915135754 },
+  { "name": "Kipa Avm Önündeki Park (5021/8)", "lat": 40.76046309982869, "lng": 29.850579047886324 },
+  { "name": "Zübeyde Hanım Parkı (2336/1)", "lat": 40.75447436567269, "lng": 29.83288955133959 },
+  { "name": "Sadık Ahmet Parkı", "lat": 40.752534681553456, "lng": 29.82653104858357 },
+  { "name": "Abdullah Tayyip Olçok Gençlik Merkezi", "lat": 40.7517763459439, "lng": 29.823516177016174 },
+  { "name": "Huriye Pak İlk Ve Orta Okulu", "lat": 40.76344055084395, "lng": 29.827293902656507 },
+  { "name": "Gazi Osman Paşa Camii Ve Park Alanı", "lat": 40.761489084387314, "lng": 29.816565965008472 },
+  { "name": "Atık Geri Getirme Merkezi", "lat": 40.77017120774902, "lng": 29.776113031093715 },
+  { "name": "Çenesuyu Fabrikası", "lat": 40.77853063602603, "lng": 29.820097824916566 },
+  { "name": "Derince İmam Hatip Lisesi Bahçesi", "lat": 40.77484222294207, "lng": 29.824323540851776 },
+  { "name": "Çavuşoğlu Parkı", "lat": 40.77404385902814, "lng": 29.825487098714618 },
+  { "name": "Melikşah Anadolu Lisesi", "lat": 40.779247517035174, "lng": 29.82276908819895 },
+  { "name": "Fatih Ortaokulu", "lat": 40.76986398912546, "lng": 29.822439788211746 },
+  { "name": "Teknik Alt Yapı Alanı", "lat": 40.772930986148424, "lng": 29.82221994577516 },
+  { "name": "Park Alanı (2974/9)", "lat": 40.7708645541174, "lng": 29.821255204199872 },
+  { "name": "Yusuf Keskin Parkı", "lat": 40.769796518955886, "lng": 29.819463077284357 },
+ 
+  { "name": "Azerbaycan Parkı", "lat": 40.75234967769258, "lng": 29.814303869608803 },
+  { "name": "Yaşar Kemal Parkı", "lat": 40.751537240375896, "lng": 29.81103998278222 },
+  { "name": "Dumlupınar İ.Ö.O.", "lat": 40.751765565741586, "lng": 29.806225828353718 },
+  { "name": "Sağlıklı Yaşam Parkı", "lat": 40.7580553361466, "lng": 29.81189609283878 },
+  { "name": "Derince Kız Anadolu İmam Hatip Lisesi", "lat": 40.76716465699824, "lng": 29.80614554723323 },
+  { "name": "Mevlana İmam Hatip Ortaokulu", "lat": 40.77526365949089, "lng": 29.810091407414948 },
+  { "name": "İlkokul + Ortaokul Alanı", "lat": 40.777482886474075, "lng": 29.812135352970845 },
+  { "name": "Safir Ve Korupark Sitesi Arası", "lat": 40.77167235692251, "lng": 29.805700133542246 },
+  { "name": "Kev Tesisleri", "lat": 40.769122331173776, "lng": 29.808270328789618 },
+  { "name": "Park Alanı (4762/2)", "lat": 40.780677129789545, "lng": 29.812729404367797 },
+  { "name": "Muhtar Mehmet Özdemir Parkı", "lat": 40.77561914968895, "lng": 29.806537703143327 },
+  { "name": "Şehit Mustafa Semerci Parkı", "lat": 40.77298008596287, "lng": 29.80938025278079 },
+  { "name": "Şehit Polis Fethi Sekin Parkı", "lat": 40.772763902498895, "lng": 29.811554022987526 },
+      
+      
+      
+      
+      //Körfez
+       { "name": "Rıfat Ilgaz İlkokulu", "lat": 40.794830009447416, "lng": 29.643311991535295 },
+  { "name": "KOU Hereke Borusan Kampüsü", "lat": 40.78430651245328, "lng": 29.620756416029852 },
+  { "name": "Türk Kahvesi Önü", "lat": 40.77275620606355, "lng": 29.724866392961818 },
+  { "name": "19 Mayıs Parkı", "lat": 40.7772761969904, "lng": 29.72044673071168 },
+  { "name": "Nuh Çimento Vatan İlkokulu", "lat": 40.80595832716815, "lng": 29.650845912333317 },
+  { "name": "Hereke Uzunpınar İlkokulu", "lat": 40.812513253134235, "lng": 29.65897738908589 },
+  { "name": "Çamlıtepe Mesleki ve Teknik Anadolu Lisesi", "lat": 40.774747912914435, "lng": 29.765556460044674 },
+  { "name": "Körfez Mesleki ve Teknik Anadolu Lisesi", "lat": 40.765138485973154, "lng": 29.793725007053652 },
+  { "name": "Esentepe Stadı", "lat": 40.76417967874733, "lng": 29.793021725888796 },
+  
+  { "name": "Seka Çocuk Dostları Ortaokulu", "lat": 40.75256028619435, "lng": 29.795500754781234 },
+  { "name": "Fatih Sultan Mehmet Parkı", "lat": 40.75687803544008, "lng": 29.792030954314253 },
+  { "name": "Akşemsettin Parkı", "lat": 40.755786418687286, "lng": 29.797596599604155 },
+  { "name": "Yıldız Parkı", "lat": 40.7529294304071, "lng": 29.79222771317894 },
+  { "name": "Tütünçiftlik Kültür Merkezi", "lat": 40.760405058585974, "lng": 29.784715156282807 },
+  { "name": "Tüpraş 50. Yıl Anadolu Lisesi", "lat": 40.75621376719714, "lng": 29.789539700749348 },
+  { "name": "Azmi Akyol Parkı", "lat": 40.75565378536276, "lng": 29.783152266398076 },
+  { "name": "İgsaş Site Cami Bahçesi", "lat": 40.75199899121322, "lng": 29.787538383542415 },
+  { "name": "Sürücü Eğitim Alanı", "lat": 40.74354088728668, "lng": 29.785818425770177 },
+  { "name": "Otopark Alanı", "lat": 40.746305534418994, "lng": 29.790019274597395 },
+  { "name": "Yarımca Anadolu Lisesi", "lat": 40.77552380196044, "lng": 29.737317985574002 },
+  { "name": "İlimtepe Merkez Camii", "lat": 40.801566208237624, "lng": 29.76403438263662 },
+  { "name": "İlimtepe Kültür Merkezi", "lat": 40.803184188095585, "lng": 29.76113545244824 },
+  { "name": "Mesire Alanı", "lat": 40.794964497508055, "lng": 29.76894905185212 },
+  { "name": "İlimtepe 17 Ağustos İlkokulu", "lat": 40.80815158956186, "lng": 29.74530066193499 },
+  { "name": "Kalıcı Konutlar İş Merkezi", "lat": 40.79280034528609, "lng": 29.640828433735315 },
+  { "name": "Doğa Sitesi", "lat": 40.80009967770492, "lng": 29.747097193711898 },
+  { "name": "Seyirtepe Parkı", "lat": 40.77968573643002, "lng": 29.633313033468294 },
+  { "name": "Mustafa Eser Parkı", "lat": 40.784121920681244, "lng": 29.629546426663257 },
+ 
+  { "name": "Kirazlıyalı Tevfik Fikret İlkokulu", "lat": 40.778212252678976, "lng": 29.71034934059444 },
+  { "name": "Anadolu İlkokulu", "lat": 40.76300674503757, "lng": 29.79051307409302 },
+  { "name": "Şehit Özcan Yılmaz Parkı", "lat": 40.76074091919092, "lng": 29.796190595873863 },
+  { "name": "Atatürk Anadolu Lisesi", "lat": 40.77063567862068, "lng": 29.748189138203106 },
+  { "name": "Körfez Belediyesi Hizmet Binası Alanı", "lat": 40.77306601581275, "lng": 29.746204472865145 },
+  { "name": "Alaattin Yüksel Parkı", "lat": 40.76760257108897, "lng": 29.74866017640133 },
+  { "name": "Petkim Ortaokulu", "lat": 40.771101430528184, "lng": 29.74595640438458 },
+  { "name": "Kiraz Parkı", "lat": 40.76843053938122, "lng": 29.745139751301352 },
+  { "name": "Karayolları Arazisi (Boş Alan)", "lat": 40.778764985996716, "lng": 29.693467355759477 },
+  { "name": "Kevser Parkı", "lat": 40.768892831524475, "lng": 29.790134779286106 },
+  { "name": "Atatürk Ortaokulu", "lat": 40.767349641602166, "lng": 29.789670337982603 },
+  { "name": "Yeniyalı Fahri Korutürk İlkokulu", "lat": 40.76677920538971, "lng": 29.780308516452695 },
+  { "name": "Körfez Orhangazi Anadolu Lisesi", "lat": 40.76834751681776, "lng": 29.784238211752534 },
+  { "name": "Ahmed-i Hani Parkı", "lat": 40.80335819510008, "lng": 29.64434640614111 },
+  { "name": "Yukarı Hereke Spor Kompleksi", "lat": 40.80383927116648, "lng": 29.646060369175157 },
+  { "name": "Ömer İsmet UZUNYOL MYO (Marshall Boya Yerleşkesi)", "lat": 40.78470010891122, "lng": 29.61536546779655 },
+  { "name": "Dostluk Parkı", "lat": 40.77408389859962, "lng": 29.79153031563237 },
+  { "name": "Emlak Konut Anadolu İmam Hatip Lisesi", "lat": 40.77291634998858, "lng": 29.797227865580044 },
+  { "name": "Yavuz Selim İlkokulu", "lat": 40.77373447835289, "lng": 29.79257377428317 },
+  { "name": "Pazar Alanı", "lat": 40.77581607403561, "lng": 29.776359203030317 },
+      
+      
+      
+      //Dilovası
+      {name: "Tepecik Mesire Alanı", lat: 40.88996848572279, lng: 29.61651191080195},
+{name: "Toki Osmangazi İlkokulu Ve Ortaokulu", lat: 40.86231560000196, lng: 29.58924759998069},
+{name: "Köseler İlkokulu Ve Ortaokulu", lat: 40.86377872869941, lng: 29.579944486364436},
+{name: "Köseler İlkokuluna Bağlı Anasınıfı B Şubesi", lat: 40.84726748107868, lng: 29.554741701208382},
+{name: "Çerkeşli Nuh Çimento İlkokulu Ve Ortaokulu", lat: 40.81493727179467, lng: 29.581518417008045},
+{name: "Çerkeşli Yurt Stadı", lat: 40.81198389464728, lng: 29.582920761111648},
+{name: "Şehit İlimdar Atasoy İmam Hatip Lisesi", lat: 40.79581347920971, lng: 29.550757174741268},
+{name: "Muhammed İkbal Parkı", lat: 40.79456342693274, lng: 29.550449294699323},
+{name: "Dilovası Millet Bahçesi", lat: 40.79965726673513, lng: 29.551005183745467},
+{name: "Gebkim Mesleki Ve Teknik Anadolu Lisesi", lat: 40.79748740447039, lng: 29.54905777949192},
+{name: "Dilovası Kaymakamlığı Otoparkı", lat: 40.795345310809196, lng: 29.551561770776484},
+{name: "Şehit Nihat Karadaş Stadı", lat: 40.793219763203936, lng: 29.547777872063815},
+{name: "Şerife Bacı Anaokulu", lat: 40.78857092240228, lng: 29.53760169748251},
+{name: "Dilovası Mesleki Ve Teknik Anadolu Lisesi", lat: 40.78893376980999, lng: 29.53843475700832},
+{name: "Yahya Kaptan Anadolu Lisesi", lat: 40.796983893312145, lng: 29.54733639320919},
+{name: "Güneş Spor Tesisleri", lat: 40.79284845844576, lng: 29.547960964380163},
+{name: "Dilovası Kapalı Spor Salonu", lat: 40.7957820990599, lng: 29.546632456571228},
+{name: "Selahaddin Eyyubi Semt Konağı", lat: 40.78990076129588, lng: 29.547133508585457},
+{name: "Şehit Emin Durmuş Semt Konağı", lat: 40.786317749400915, lng: 29.544509826819883},
+{name: "Solventaş İlkokulu", lat: 40.78268877263383, lng: 29.542801131845543},
+{name: "(Kevser) Eynerce Parkı", lat: 40.78243785546255, lng: 29.543172827578708},
+{name: "Adnan Kahveci Parkı", lat: 40.78464395355972, lng: 29.541851766397365},
+{name: "Mehmet Akif Ersoy İmam Hatip Ortaokulu", lat: 40.785973623493454, lng: 29.546857348491},
+{name: "Ziya Toplan İlkokulu Ve Ortaokulu", lat: 40.770854116833505, lng: 29.57750944032028},
+{name: "Tavşancıl Marshall Boya Mesleki Ve Teknik Anadolu Lisesi", lat: 40.770854116833505, lng: 29.57750944032028},
+{name: "Tavşancıl Salih Gün Spor Salonu", lat: 40.77483183076109, lng: 29.57226748501104},
+{name: "Tavşancıl Yahya Kaptan Parkı", lat: 40.77202027449907, lng: 29.573503325596636},
+{name: "Can Gülmen İlkokulu", lat: 40.772789452952885, lng: 29.52101861207696},
+{name: "Dilovası İlkokulu (Şehit Can Duyar İlkokulu)", lat: 40.779275357388514, lng: 29.525127286176236},
+{name: "Oksijen Avm Otopark Alanı", lat: 40.77333524009337, lng: 29.520106459596736},
+{name: "Diliskelesi Emre Toprak Kapalı Halı Saha", lat: 40.77540153117135, lng: 29.52164371769299},
+{name: "Şehit Mehmet Kocabay İmam Hatip Ortaokulu", lat: 40.781735490262044, lng: 29.521625171449983},
+{name: "Diliskelesi Halı Saha", lat: 40.77980641749048, lng: 29.519906159613093},
+{name: "Said-İ Nursi Semp Konağı", lat: 40.78207450252621, lng: 29.519897146276627},
+{name: "Yılport Meslek Ve Teknik Anadolu Lisesi", lat: 40.778168652600016, lng: 29.521337307574612},
+{name: "Mübeccel Çolakoğlu Ortaokulu", lat: 40.78756245739128, lng: 29.558781886671397}, 
+{name: "Görkem Çiler Semp Konağı", lat: 40.78596147947929, lng: 29.556004107592077},
+{name: "Dilovası Devlet Hastanesi", lat: 40.78825238285804, lng: 29.556509486650516},
+{name: "Hacı Seyit Taşan İlkokulu", lat: 40.78509770882036, lng: 29.552745011904207},
+{name: "Ormanda Kalan Halı Saha", lat: 40.78349090931381, lng: 29.556022253097098},
+{name: "Şehit İzzettin İnceoğlu İlkokulu", lat: 40.78505148327104, lng: 29.5387182163106},
+{name: "Adatepe Parkı Ve Mesire Alanı", lat: 40.774470746075764, lng: 29.537760608507682},
+      
+      
+      
+      
+      
+      
+      
+      //GEBZE
+      {name: "Şehit Alattin Şahpaz Parkı", lat: 40.81671017944905, lng: 29.37375736438719},
+{name: "Gökbayrak Parkı", lat: 40.81991042786542, lng: 29.387517281172347},
+{name: "Ademyavuz Pazar Alanı", lat: 40.82044213110315, lng: 29.375298930780342},
+{name: "Ahatlı Parkı", lat: 40.97602100608283, lng: 29.69353152561625},
+
+{name: "Şehit Şaban Töngel Parkı", lat: 40.808664150484624, lng: 29.44378461059481},
+{name: "Şule Yüksel Şenler Parkı", lat: 40.87534187484968, lng: 29.430623373684895},
+
+
+{name: "Beylik Bağı Parkı", lat: 40.80548202527979, lng: 29.38328135676171},
+{name: "Beylik Bağı Spor Tesisi", lat: 40.799163678049, lng: 29.389288385613057},
+{name: "Öğretmen Alemdar Karagöz Parkı", lat: 40.90272018595051, lng: 29.49520364818179},
+{name: "Lunapark Alanı", lat: 40.81006856029017, lng: 29.380703371187664},
+{name: "Şeyh Şamil Parkı", lat: 40.81312512343776, lng: 29.378856870790756},
+{name: "Hünkar Çayırı", lat: 40.81401175296341, lng: 29.343238503193035},
+{name: "Kaftancı Cad. Parkı / Karabağ Parkı", lat: 40.81343198982812, lng: 29.37626684198107},
+{name: "Denizli İlkokulu", lat: 40.89166387215851, lng: 29.53343766243742},
+{name: "Duraklı Mesire Alanı", lat: 40.95786555680228, lng: 29.727840856360917},
+{name: "Elbizli Parkı", lat: 40.94125352125369, lng: 29.72739194596512},
+{name: "Eskihisar Macera Parkı", lat: 40.77160060373579, lng: 29.43394322260405},
+{name: "Nasrettin Hoca Parkı", lat: 40.81717896331042, lng: 29.427615412619343},
+{name: "Şehit Oğuzhan Demir Parkı / Gaziler Parkı", lat: 40.81265242311418, lng: 29.427791516254477},
+{name: "Nesil Parkı", lat: 40.814156604811686, lng: 29.423897680559026},
+{name: "Yumrukaya Piknik Alanı", lat: 40.82574493531996, lng: 29.431813657036983},
+{name: "Park Ve Bahçeler Müdürlüğü", lat: 40.81642557663735, lng: 29.420701394131886},
+{name: "Gebze Belediyesi", lat: 40.80609540140467, lng: 29.440116881371225},
+{name: "Dr.Sadık Ahmet Parkı", lat: 40.81080860036483, lng: 29.43619289880639},
+{name: "Bilge Kağan Parkı", lat: 40.803040879405806, lng: 29.433163270969928},
+{name: "Arda Parkı", lat: 40.81307334334687, lng: 29.436787331019346},
+{name: "Akşemsettin Parkı", lat: 40.79333609565558, lng: 29.429054589063156},
+{name: "Kent Meydanı", lat: 40.79897972210569, lng: 29.430735564378406},
+{name: "Hatipler Mah. Parkı", lat: 40.98629894755778, lng: 29.708750068328108},
+{name: "Kale Oto Çocuk Parkı", lat: 40.801826622636455, lng: 29.39839889674498},
+{name: "Pirsultan Abdal Parkı", lat: 40.80488413647499, lng: 29.400658652402235},
+{name: "Şehit Öğretmen Necmettin Kuyucu Anadolu Lisesi", lat: 40.820007849251766, lng: 29.432954261025166},
+{name: "Zekeriya Güçlü Parkı", lat: 40.81533228142596, lng: 29.437801381577465},
+
+{name: "Koca Yusuf Parkı", lat: 40.81431480685921, lng: 29.43902001581681},
+{name: "İnönü Parkı", lat: 40.8172661232063, lng: 29.4411409164254},
+
+{name: "Piri Reis Parkı / Şehit Piyade Kom. Çvş. Fatih Duman Parkı", lat: 40.779852415643546, lng: 29.41992055863535},
+{name: "İstasyon Bilim Sanat Merkezi", lat: 40.78497175295899, lng: 29.410866744474173},
+{name: "H.Yusuf Gebzeli Parkı", lat: 40.78558371915122, lng: 29.424304751161735},
+{name: "Kadıllı İlkokulu", lat: 40.92867461617438, lng: 29.477540542311296},
+{name: "Kargalı Ortaokulu", lat: 40.95165169930521, lng: 29.669417364719052},
+{name: "Üç Çınarlar Parkı", lat: 40.823740470242704, lng: 29.464255850923646},
+{name: "Şht.Uz.Çvş.Ümit İnan Parkı", lat: 40.828139628559, lng: 29.478511942669023},
+{name: "Aladdin Kurt Anadolu Lisesi", lat: 40.818171230378795, lng: 29.46248752363287},
+{name: "Gebze Belediyesi Fen İşleri", lat: 40.795490159696676, lng: 29.39522219220565},
+
+{name: "Köşklüçeşme Parkı", lat: 40.79601657777957, lng: 29.41436992287989},
+
+{name: "Kbb İsu Genel Müdürlüğü", lat: 40.79640286265674, lng: 29.396677010970482},
+
+{name: "Mevlana Kapalı Pazar Alanı", lat: 40.81158067605109, lng: 29.419064163867265},
+{name: "15 Temmuz Şehitleri Parkı", lat: 40.81065917387097, lng: 29.418434187973187},
+{name: "Mimar Sinan Parkı", lat: 40.81303413235948, lng: 29.386557837187954},
+{name: "Şifa Parkı", lat: 40.811540163186415, lng: 29.38545919953951},
+{name: "Dostluk Parkı", lat: 40.808845631908376, lng: 29.385634561314813},
+{name: "Sultan Parkı", lat: 40.886535237057466, lng: 29.494088428396523},
+{name: "Muallimköy İlkokulu", lat: 40.79333402834214, lng: 29.49259226779753},
+{name: "Gebze Mesleki Eğitim Merkezi", lat: 40.794671436745276, lng: 29.490634852115722},
+{name: "Mudarlı Parkı", lat: 41.010391147573195, lng: 29.555813075140176},
+{name: "Mustafa Paşa İlkokulu", lat: 40.80293869144286, lng: 29.428514464353896},
+{name: "Fsm Anadolu Lisesi", lat: 40.79852588963738, lng: 29.424663750015757},
+{name: "İsmail Bey Gaspralı Parkı", lat: 40.789254422109174, lng: 29.425466358570628},
+{name: "Köroğlu Parkı", lat: 40.78832182414191, lng: 29.424033581033942},
+{name: "Fatih Devlet Hastahanesi Otoparkı", lat: 40.79104771964828, lng: 29.42079318687939},
+{name: "Ovacık Mesire Alanı", lat: 40.96532839476721, lng: 29.502568688513254},
+{name: "Trafik Eğitim Parkı", lat: 40.84944980351585, lng: 29.467649381817512},
+
+{name: "Kaşgarlı Mahmut Parkı", lat: 40.81007883162997, lng: 29.456390162581112},
+{name: "Sultanorhan Eski Askeriye Alanı (Millet Bahçesi)", lat: 40.80435332344996, lng: 29.450033836259966},
+{name: "Şht.Özkan Özçeri Parkı", lat: 40.80287400500128, lng: 29.44335217505979},
+{name: "Tatlıkuyu Pazar Alanı", lat: 40.79020038607164, lng: 29.44323833124756},
+{name: "Tatlı Kuyu Vadisi", lat: 40.787824006432025, lng: 29.432096042462792},
+{name: "Tatlıkuyu Aile Sağlık Merkezi Ve Parkı", lat: 40.78912138554878, lng: 29.43398756800072},
+{name: "Tepemanayır İlkokulu", lat: 41.01719154835745, lng: 29.733337470138956},
+{name: "Osman Ağa Parkı", lat: 40.80741595948421, lng: 29.39099301676166},
+{name: "Ulus Kapalı Pazar Alanı", lat: 40.808043406736, lng: 29.392656445563226},
+{name: "Yağcılar İlkokulu Ve Park", lat: 40.91015231386395, lng: 29.655630098894413},
+{name: "Beylik Dağı Millet Ormanı", lat: 40.80333475497184, lng: 29.412847093192642},
+{name: "Mutlu Kent İlkokulu", lat: 40.829861000427556, lng: 29.42377684433295},
+
+{name: "Yahya Kaptan Parkı", lat: 40.8295278837765, lng: 29.422684025423077},
+{name: "Ahmet Pembegüllü Parkı", lat: 40.82375716946278, lng: 29.41904742177729},
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      {name: "MEHMET ZEKİ OBDAN İLKOKULU", lat: 40.787832304796204, lng: 29.538059895674987},
+  {name: "HASAN ALİ YÜCEL İLKOKULU", lat: 40.79423439613888, lng: 29.538762227307295},
+ 
+  {name: "AKŞEMSETTİN İLKOKULU", lat: 40.79007770147447, lng: 29.547893465924027},
+  {name: "NUH ÇİMENTO İLK VE ORTAOKULU", lat: 40.78666516195178, lng: 29.616596960634052},
+  {name: "PARK", lat: 40.780519311793796, lng: 29.80949652801716},
+  {name: "ALPARSLAN ORTAOKULU", lat: 40.76892492131921, lng: 29.814364797785853},
+  {name: "ANITPARK PARK ALANI", lat: 40.75985290284923, lng: 29.78356501035279},
+  {name: "ORUÇ REİS ANADOLU LİSESİ", lat: 40.75320874407967, lng: 29.7819312899784},
+  {name: "TÜPRAŞ İLKOKULU", lat: 40.75510796113375, lng: 29.790609154609317},
+  {name: "SEKA ÇOCUK DOSTLARI İLK VE ORTAOKULU", lat: 40.75504199292738, lng: 29.790531394114666},
+  
+  {name: "PARK ALANI", lat: 40.753771339507836, lng: 29.78972580628222},
+  {name: "K.D.K.Ç.A. (ESKİ PARK ALANI)", lat: 40.750774163666705, lng: 29.779779198136996},
+  {name: "TÜTÜNÇİFTLİK TREN İSTASYONU", lat: 40.74734781800253, lng: 29.788354637323096},
+
+  {name: "FATİH METİN PARKI", lat: 40.85984144475112, lng: 29.389726032541134},
+//Darıca
+  {name: "Muhsin Yazıcıoğlu Parkı", lat: 40.78374465984337, lng: 29.404758637868326},
+  {name: "1572/1 Sokak - 1572/2 Sokak", lat: 40.77753667284152, lng: 29.41717971473889},
+  {name: "Petekli Park", lat: 40.77439877157381, lng: 29.41378126507198},
+  {name: "Ömer Ergin Parkı", lat: 40.77578059101697, lng: 29.419025199757666},
+  {name: "Ahmet Parkmaksız İlkokulu", lat: 40.78350027240075, lng: 29.407615998451668},
+  {name: "Barış Ortaokulu", lat: 40.78067827944355, lng: 29.414931544693236},
+  {name: "Aslan Çimento İlkokulu", lat: 40.75752442152895, lng: 29.38969941175236},
+  {name: "AKŞEMSETTİN PARKI", lat: 40.76785001570175, lng: 29.391343058887127},
+  {name: "MEVLANA PARKI", lat: 40.80656501849529, lng: 29.42649940375249},
+  {name: "Güner Sokak Şehit Tahsin Sarıtosun Parkı", lat: 40.77002145900599, lng: 29.395142309845706},
+  {name: "Sokullu Mehmet Paşa Parkı", lat: 40.76408664060596, lng: 29.387663369075703},
+  {name: "Darıca Millet Bahçesi", lat: 40.76195256070196, lng: 29.39689869403021},
+  {name: "Şehit Kardeşler Ahmet-Mehmet Oruç Parkı", lat: 40.767442910132175, lng: 29.387958911560588},
+  {name: "Şehit Polis Demet Sezen Parkı", lat: 40.76376050752067, lng: 29.393291978101008},
+  {name: "Şehit Sami İlhan Parkı", lat: 40.76463798116234, lng: 29.386394523957573},
+  {name: "Kore Gazisi Feti Bozkurt Parkı", lat: 40.76959988506717, lng: 29.392539501774312},
+  {name: "Gökşen Yücel Lisesi", lat: 40.75996782204271, lng: 29.38870609268393},
+  {name: "Faik Şahenk İlkokulu", lat: 40.76341723681205, lng: 29.38826003463794},
+  {name: "Karaca Sokak Otopark", lat: 40.762666424032155, lng: 29.38544133843268},
+  {name: "Bağlarbaşı Ortaokulu", lat: 40.76800562551644, lng: 29.390243271132707},
+  {name: "Millet Bahçesi Kütüphane Otopark", lat: 40.757921646244014, lng: 29.394835618241054},
+  {name: "Yusuf Savaş İlkokulu", lat: 40.78754003814236, lng: 29.349140252943894},
+  {name: "Ahmet Rasim Parkı", lat: 40.79278703526277, lng: 29.366455023800416},
+  {name: "Erenler Parkı", lat: 40.792416402541015, lng: 29.36234429279918},
+  {name: "Yeşil Alan", lat: 40.78676873630632, lng: 29.33782515720872},
+  {name: "Şehit Gaffar Okan Parkı", lat: 40.792334560536474, lng: 29.355494822136798},
+  {name: "Boş Alan", lat: 40.79128089882618, lng: 29.362200186155203},
+  {name: "Mimar Sinan Parkı", lat: 40.78906258543614, lng: 29.355191753910614},
+  {name: "İmkb Lisesi", lat: 40.79460463332135, lng: 29.35824762100798},
+  {name: "Mevsim Sokak Park Alanı", lat: 40.788793328010804, lng: 29.34923111408902},
+  {name: "23 NİSAN PARKI", lat: 40.76126848729302, lng: 29.381242687824663},
+  {name: "Namık Kemal İlkokulu", lat: 40.7619081060356, lng: 29.37792531805075},
+  {name: "Turgut Aktaş Parkı", lat: 40.75895068485793, lng: 29.381094596473602},
+  {name: "Çocuk Parkı", lat: 40.7643252778976, lng: 29.383634307149247},
+  {name: "Barış Manço Parkı", lat: 40.7580314404649, lng: 29.375888436421555},
+  {name: "Eren Bülbül Parkı", lat: 40.76192781338238, lng: 29.383380858423738},
+  {name: "Kemalpaşa Caddesi, 15 Temmuz Demokrasi Parkı", lat: 40.79899058209541, lng: 29.365973714324237},
+  {name: "Deniz Yıldızları Ortaokulu", lat: 40.79469771105117, lng: 29.369397400651057},
+  {name: "Mustafa İbişoğlu Parkı", lat: 40.800027474506436, lng: 29.365101600225028},
+  {name: "Toki & Neşet Yalçın Lise", lat: 40.79524879938061, lng: 29.36134817034063},
+  {name: "Destebaşı Cami Parkı", lat: 40.79616814833195, lng: 29.370510436635403},
+  {name: "Park", lat: 40.801910267295554, lng: 29.36610364863718},
+  {name: "Fevzi Çakmak Recep Yazıcıoğlu Parkı", lat: 40.7795286243983, lng: 29.409883645485944},
+  {name: "Dolunay Sk. Ast. Ömer Bilal Akpınar Parkı", lat: 40.774046164889654, lng: 29.407394575301634},
+  {name: "Şehit Hasan Hüseyin Günay Parkı", lat: 40.77659603279115, lng: 29.412189514789855},
+  {name: "Farabi Eğt. Ve Arş. Hastanesi Karşısı", lat: 40.77250851124877, lng: 29.406033739970045},
+  {name: "Park Alanı", lat: 40.77332485856929, lng: 29.412773340460156},
+  {name: "Çanakkale Parkı", lat: 40.77562352928456, lng: 29.40705470954997},
+  {name: "Fevzi Çakmak Muhtarlık Parkı", lat: 40.773725761508615, lng: 29.405657350942924},
+  {name: "Aşık Şenlik Parkı Dinamit Sokak", lat: 40.77571104433991, lng: 29.38541543345314},
+  {name: "R.Hamdi Bey Ortaokulu", lat: 40.77302764375953, lng: 29.384901407291572},
+  {name: "NASRETTİN HOCA PARKI", lat: 40.77711168476984, lng: 29.4010864596435},
+  {name: "Mevlana Caddesi (K.K.İlkokul Karşısı)", lat: 40.78191814832495, lng: 29.402598140499634},
+  {name: "19 MAYIS GENÇLİK PARKI", lat: 40.77636795305158, lng: 29.395037298373964},
+  {name: "30 AĞUSTOS ZAFER PARKI", lat: 40.78131647928379, lng: 29.406317435442237},
+  {name: "Sancaktepe Sosyal Tesisleri", lat: 40.773710490272066, lng: 29.39140346693249},
+  {name: "Darıca Kızılay Derneği Karşısı Pınarbaşı Sk.", lat: 40.77975241171984, lng: 29.397585756260955},
+  {name: "Basketbol Sahası Ve Çevresi Bodrum Sokak", lat: 40.778712364401905, lng: 29.395421207762883},
+  {name: "Şehitmurat Tevlim Parkı - Mahalle Konağı", lat: 40.778379817296134, lng: 29.399396441702457},
+  {name: "Aşık Veysel Parkı", lat: 40.78144414910809, lng: 29.396230267685777},
+  {name: "Şair Nafi Parkı", lat: 40.77850443990612, lng: 29.391849623191238},
+  {name: "Mustafa Daşdangil Parkı", lat: 40.773793338100795, lng: 29.399357844188852},
+  {name: "Sancaktepe Mesire Alanı Alt Kısımlar", lat: 40.77303915221824, lng: 29.388239537267843},
+  {name: "ŞEHİT OSMAN ONBAŞI PARKI", lat: 40.781279324213045, lng: 29.386520786765075},
+  {name: "ŞHT.İLHAN KARTAL PARKI", lat: 40.77994014471666, lng: 29.388691330789378},
+  {name: "YILDIZ PARKI", lat: 40.78213614165113, lng: 29.379023047350092},
+  {name: "İbrahim Erkal Parkı, Doğukan Sokak", lat: 40.78689869529129, lng: 29.382099861368335},
+  {name: "Nenehatun Stadı", lat: 40.77693689321322, lng: 29.378299856670235},
+  {name: "Muammer Gökburun Parkı", lat: 40.779967705641944, lng: 29.38387638931429},
+  {name: "Hamza Yerlikaya Parkı", lat: 40.77947037177172, lng: 29.386362439698686},
+  {name: "Şerife Bacı Parkı", lat: 40.777742449599174, lng: 29.38064338044727},
+  {name: "Hacı Bektaşı Veli Parkı", lat: 40.782658191075754, lng: 29.38990893700546},
+  {name: "Park Alanı", lat: 40.78187151538731, lng: 29.39077020865126},
+  {name: "Okul Alanı - Boş", lat: 40.7821609028794, lng: 29.39005183341984},
+  {name: "Darıca Ortaokulu", lat: 40.78346876341122, lng: 29.389804999522834},
+  {name: "Zeytin Dalı Parkı, Öznur Sokak", lat: 40.78808027223919, lng: 29.367303185900948},
+  {name: "ŞEYH ŞAMİL PARKI", lat: 40.79477567348282, lng: 29.372747701588896},
+  {name: "LOKMAN HEKİM PARKI", lat: 40.78564116687966, lng: 29.375012970656073},
+  {name: "Şehit Zafer Tuygun Parkı", lat: 40.78675166514081, lng: 29.375354541226454},
+  {name: "Servet Çambol", lat: 40.79466750639134, lng: 29.374168017381283},
+  {name: "Zeki Gezer Ortaokulu", lat: 40.78742512281674, lng: 29.37169537244668},
+  {name: "Ülkün Yalçın Anadolu Lisesi", lat: 40.78623242271337, lng: 29.377967289194004},
+  {name: "Ayfer Gazanfer", lat: 40.79056155171704, lng: 29.36934600103716},
+  {name: "Erol Sokak", lat: 40.78935667483751, lng: 29.368795384778853},
+  {name: "Hasan Tahsin Parkı", lat: 40.790703585065955, lng: 29.3767251287301},
+  {name: "Ertuğrul Gazi Parkı", lat: 40.789965482940765, lng: 29.371097349576804},
+  {name: "Ömer Seyfetin Parkı", lat: 40.781452952002304, lng: 29.36632789393765},
+  {name: "Seyyid Savaş Öztanık Parkı, Barbaros Cadddesi", lat: 40.783111227423014, lng: 29.370140729018196},
+  {name: "Servet Yalçın Ortaokulu", lat: 40.7861930651317, lng: 29.366449582159618},
+  {name: "Eren Bülbülparkı Ve Çevresi", lat: 40.7822558914695, lng: 29.35523501016175},
+  {name: "Şehit Polis Fethi Sekin Parkı", lat: 40.78691091945577, lng: 29.36542103187407},
+  {name: "Ceren Sokak, Yelken Parkı", lat: 40.77571278654115, lng: 29.354245938628605},
+  {name: "Aşık Mevlüt İhsani", lat: 40.788737183839444, lng: 29.391571014879386},
+  {name: "1634/1 Sokak Okul Yanı", lat: 40.78651625623767, lng: 29.392923998627285},
+  {name: "Yusuf İsa Alptekin Parkı, 1605 Sokak", lat: 40.786481628275176, lng: 29.398050661357868},
+  {name: "Sırasöğütler Dere Islah Alanı Çevresi", lat: 40.78438316436907, lng: 29.39271373147306},
+  {name: "Trafik Egitim Parkı", lat: 40.78746317911777, lng: 29.38770079636826},
+  {name: "Evliya Çelebi Parkı", lat: 40.792974716956046, lng: 29.386860528208167},
+  {name: "Sırasöğütler Anadolu Lisesi", lat: 40.79083748353818, lng: 29.387095913287702},
+  {name: "KALE PARK", lat: 40.757656101852305, lng: 29.38402555846622},
+  {name: "Millet Bahçesi Otoparkı", lat: 40.75523922043032, lng: 29.390520357388112},
+  {name: "Şehit Piyade Er Murat Altay Çamlık Parkı", lat: 40.79112151966791, lng: 29.37358232391759},
+  {name: "Kaymakamlık Karşısı Otopark", lat: 40.75727576012175, lng: 29.385790045172946},
+
+      //Çayırova
+
+  {"name": "Park Alanı", "lat": 40.8348267938702, "lng": 29.38471240393162},
+  {"name": "Çayırova Belediyesi Bahçesi", "lat": 40.83049422111839, "lng": 29.38091758424714},
+  {"name": "Çayırova Belediyesi Otoparkı", "lat": 40.830718090601096, "lng": 29.380390327157794},
+  {"name": "Şehit Jandarma Er Fatih Çaybaşı Parkı", "lat": 40.831633976682824, "lng": 29.38414684252607},
+  {"name": "Behram Çobanoğlu Parkı", "lat": 40.832988228308366, "lng": 29.38835183772667},
+  {"name": "Park Alanı Ve Anadolu İmamhatip Lisesi Alanı", "lat": 40.83504716759326, "lng": 29.38580274157189},
+  {"name": "Park Alanı", "lat": 40.83625997366705, "lng": 29.386445566667778},
+  {"name": "Anadolu Parkı", "lat": 40.82891330101061, "lng": 29.386348203007113},
+  {"name": "Park Alanı", "lat": 40.82860306696358, "lng": 29.38820030772137},
+  {"name": "Mustafa Kılıç Parkı", "lat": 40.83079300841649, "lng": 29.388884649991507},
+  {"name": "7 Haziran Parkı", "lat": 40.82852427007931, "lng": 29.390779132115078},
+  {"name": "Güzeltepe Parkı", "lat": 40.826345647482626, "lng": 29.389434522395348},
+  {"name": "Özdemir Marangoz Parkı", "lat": 40.826632639656026, "lng": 29.391791442949867},
+  {"name": "Mevlana İlköğretim Okulu", "lat": 40.827916971376474, "lng": 29.38792918556844},
+  {"name": "Mustafa Necati İlköğretim Okulu", "lat": 40.826966965221395, "lng": 29.395305634361424},
+  {"name": "Park Alanı", "lat": 40.82988651041357, "lng": 29.377065272731713},
+  {"name": "Aşıklar Tepesi Park Alanı", "lat": 40.83671063986522, "lng": 29.378061780718067},
+  {"name": "Seyit Onbaşı Parkı", "lat": 40.832831961967955, "lng": 29.378207856182065},
+  {"name": "Bülent Ecevit Parkı", "lat": 40.83513485925946, "lng": 29.375770837592416},
+  {"name": "Yunus Ergüz İlköğretim Okulu", "lat": 40.835614329540924, "lng": 29.37972484071402},
+  {"name": "Atatürk Çağdaşkent Rekreasyon Alanı", "lat": 40.83739157780124, "lng": 29.392285696367153},
+  {"name": "Akse Çağdaşkent Rekreasyon Alanı", "lat": 40.83950973098266, "lng": 29.390643929881854},
+  {"name": "Aşık Veysel Parkı", "lat": 40.82944167077154, "lng": 29.404159599852502},
+  {"name": "Osman Yağmurdereli Parkı", "lat": 40.82812694137459, "lng": 29.409476655597842},
+  {"name": "Park Alanı", "lat": 40.832034515220045, "lng": 29.396692309039818},
+  {"name": "Kuştepe Mesire Alanı Ve Çayırova Stadı", "lat": 40.83958651946154, "lng": 29.402557176396446},
+  {"name": "Millet Bahçesi", "lat": 40.83111653666201, "lng": 29.408569636506904},
+  {"name": "Park Alanı", "lat": 40.833929865599785, "lng": 29.40803788779839},
+ 
+  {"name": "Şehit İlhan Küçüksolak Parkı", "lat": 40.81863863564456, "lng": 29.401925308984385},
+  {"name": "Park Alanı", "lat": 40.82206329836559, "lng": 29.411334810783753},
+  {"name": "Park Alanı", "lat": 40.81994550218696, "lng": 29.406405319510245},
+  {"name": "Park Alanı", "lat": 40.81914922113407, "lng": 29.41317784168045},
+  {"name": "Park Alanı", "lat": 40.82508179983894, "lng": 29.41032740608766},
+  
+  {"name": "Abdal Musa Parkı", "lat": 40.822925519897076, "lng": 29.38866364169338},
+  {"name": "Hayme Ana Parkı", "lat": 40.824473757606704, "lng": 29.39046984692165},
+  {"name": "Cemevi Yanı", "lat": 40.82331682758212, "lng": 29.38867716057051},
+  {"name": "Park Alanı", "lat": 40.826549572055605, "lng": 29.396971976764245},
+  {"name": "Hacı Bektaşı Veli Parkı", "lat": 40.825254458528576, "lng": 29.395651943366538},
+  {"name": "Cumhuriyet Mah. Millet Bahçesi", "lat": 40.86186111655006, "lng": 29.37058204132458},
+  {"name": "Gençlik Parkı", "lat": 40.86035895023951, "lng": 29.368326660208762},
+  {"name": "Aksu Parkı (Halı Saha)", "lat": 40.86298007048947, "lng": 29.371725027969518},
+  {"name": "Hanife Soyka İlköğretim Okulu", "lat": 40.86123744860154, "lng": 29.374822209468046},
+  {"name": "Şekerpınar Futbol Stadı", "lat": 40.85740932050601, "lng": 29.384626370672958},
+  {"name": "Park Alanı", "lat": 40.85549237604829, "lng": 29.385025853526532},
+  {"name": "Park Alanı", "lat": 40.85006632662465, "lng": 29.39262731168204},
+  {"name": "Şekerpınar İlköğretim Okulu", "lat": 40.85271151840829, "lng": 29.390378870880763},
+  {"name": "Park Alanı", "lat": 40.82621900033173, "lng": 29.36665858452456},
+  {"name": "Kent Park Avm Park Alanı", "lat": 40.8157990336071, "lng": 29.36632243724115},
+  {"name": "Ahmet Pembegüllü Parkı", "lat": 40.818776953494314, "lng": 29.36782488460777},
+  {"name": "Park Alanı", "lat": 40.824611682612755, "lng": 29.370764966048284},
+  {"name": "Hamza Polat Parkı", "lat": 40.8262833733797, "lng": 29.368692130488387},
+  {"name": "Cumhuriyet Çocuk Parkı", "lat": 40.825842124726236, "lng": 29.3720580794398},
+  {"name": "Yenimahalle İmamhatip Orta Okulu", "lat": 40.82077276806162, "lng": 29.36608708840158},
+  {"name": "Fatih Sultan Mehmet Parkı", "lat": 40.821029862117946, "lng": 29.366921436182565},    
+      
+      
+      
+      
+ 
+ 
+  {name: "YUNUS EMRE ORTAOKULU", lat: 40.80794334577476, lng: 29.44324138016064},
+  {name: "TRAFİK PARKI", lat: 40.80479669097549, lng: 29.443503355202985},
+  {name: "FATMA HANIM ÇOCUK PARKI", lat: 40.801080077032324, lng: 29.4394270414326},
+  {name: "PARK ALANI", lat: 40.81146424004119, lng: 29.457199355005482},
+  
+ 
+  {name: "PARK ALANI", lat: 40.809235350981346, lng: 29.396941595995642},
+ 
+  {name: "ZAFER CAMİİ VE PARKI", lat: 41.07448115224987, lng: 30.148467318095303},
+  {name: "GÜZELTEPE AKÇAKOCA İLKOKULU", lat: 40.81802273555708, lng: 29.406702978186186},
+  {name: "KANDIRA ANADOLU İMAM HATİP LİSESİ", lat: 41.06742797182652, lng: 30.157290880853335},
+  
+  
+  {name: "AKÇAKOCA İLKOKULU", lat: 41.068501231980235, lng: 30.152850795920862},
+ 
+  {name: "MESLEKİ TEKNİK EĞİTİM MERKEZİ", lat: 41.07949690921909, lng: 30.133339073163718},
+  {name: "Atık Geri Getirme Merkezi", lat: 40.77358263905738, lng: 29.82937945663797},
+  {name: "Park", lat: 40.77283181250051, lng: 29.825679735153578},
+  {name: "PARK ALANI", lat: 40.77581444790093, lng: 29.821638445407565},
+  {name: "PARK", lat: 40.76494051562807, lng: 29.820868345651},
+  {name: "DERİNCE PİRİ REİS ORTAOKULU", lat: 40.76262903039513, lng: 29.82026196484844},
+  {name: "PARK", lat: 40.7667082455952, lng: 29.83042501117777},
+  {name: "15.KOLORDU İLK VE ORTAOKULU", lat: 40.766168527713894, lng: 29.8377116465974},
+  {name: "CUMHURİYET İLK VE ORTAOKULU", lat: 40.76194584570635, lng: 29.832236583278146},
+  {name: "YUNUS EMRE ORTAOKULU", lat: 40.75521504396468, lng: 29.80364409349586},
+  {name: "PARK", lat: 40.77031192260838, lng: 29.848268800542442},
+  {name: "ÇAKABEY İLKOKULU", lat: 40.77061130000054, lng: 29.853099117781507},
+  {name: "TURGUT REİS İLKOKULU", lat: 40.75506042467406, lng: 29.833863085098344},
+  {name: "19 MAYIS ANADOLU LİSESİ", lat: 40.754080831823785, lng: 29.815603499982632},
+  {name: "HİKMET ULUĞBAY İLK VE ORTAOKUL", lat: 40.75366592829467, lng: 29.822955521485376},
+  {name: "SIRRIPAŞA ORTAOKULU", lat: 40.763519431381305, lng: 29.812242681535622},
+  {name: "BEKİR SITKI ÖZER İLKOKULU", lat: 40.76175558605898, lng: 29.803085224301103},
+  {name: "NECİP FAZIL ANADOLU LİSESİ", lat: 40.7596467285161, lng: 29.807841820225836},
+  {name: "ADAPAZARI MİNİBÜS KALKIŞ NOK.", lat: 40.75865222762105, lng: 29.79987548294719},
+  {name: "M.ŞEN PARKI", lat: 40.78864972995517, lng: 29.374712190780752},
+  {name: "FATİH SULTAN MEHMET PARKI", lat: 40.7993498141188, lng: 29.368390423557305},
+  {name: "YAPI KREDİ BANKASI MESLEKİ VE TEKNİK ANADOLU LİSESİ", lat: 40.8360610093506, lng: 29.396583590101603},
+
+ 
+  {name: "AŞIK MAHZUNİ ŞERİF PARKI", lat: 40.821058082234835, lng: 29.39205103069442},
+  {name: "ULUĞBEY ORTAOKULU", lat: 40.7747638550156, lng: 29.771553155909135},
+  {name: "PARK ALANI", lat: 40.77596704503901, lng: 29.772930724355717},
+  {name: "100.YIL ATATÜRK İLKOKULU", lat: 40.7735277697533, lng: 29.774435587107735},
+ 
+
+
+  
+  {name: "PARK ALANI", lat: 40.79832746486672, lng: 29.392457247332185},
+  {name: "PARK ALANI", lat: 40.79589227454639, lng: 29.38931954402678},
+  {name: "PARK ALANI", lat: 40.79432591918718, lng: 29.438832652677704},
+  {name: "PARK ALANI", lat: 40.77815587888941, lng: 29.431694269571743},
+  {name: "ŞAİR BAKİ PARK ALANI", lat: 40.777086609957934, lng: 29.434133029506437},
+  {name: "MEHMET AKİF ERSOY PARKI", lat: 40.77851331410927, lng: 29.436446386058144},
+  {name: "PARK ALANI", lat: 40.780241372318784, lng: 29.431120890923776},
+  
+
+ 
+ 
+  {name: "ÇINARLI İLK VE ORTAOKULU", lat: 40.763928699996086, lng: 29.84443713552585},
+  {name: "BOSNA YILDIZ PARKI", lat: 40.76428625785109, lng: 29.850799067892403},
+  {name: "ÇENESUYU PARKI", lat: 40.76215291560764, lng: 29.85038995464662},
+  {name: "PARK ALANI", lat: 40.77239817494804, lng: 29.836102235549482},
+  {name: "PARK ALANI", lat: 40.76193171597279, lng: 29.777297814900297},
+  {name: "GENERAL EDİP BAYOĞLU İLKOKULU", lat: 40.76158833159255, lng: 29.78110041777787},
+  {name: "PARK ALANI", lat: 40.77395753121462, lng: 29.75358475334872},
+  {name: "CAMİ VE BELEDİYE HİZMET BİNASI ALANI", lat: 40.77063610272008, lng: 29.752273523969254},
+  {name: "PARK ALANI", lat: 40.76975013731163, lng: 29.74979529992563},
+  {name: "PARK ALANI", lat: 40.76857482181537, lng: 29.752652583733216},
+  {name: "POLİSAN ORTAOKULU", lat: 40.77633289918375, lng: 29.527178848519203},
+  {name: "PARK ALANI", lat: 40.766396773387676, lng: 29.785534638413058},
+  {name: "MUSTAFA KEMAL MESLEKİ VE TEKNİK ANADOLU LİSESİ", lat: 40.764159774217454, lng: 29.781230431841806},
+  {name: "PARK", lat: 40.714642997276734, lng: 29.846214659620916},
+  {name: "PARK", lat: 40.71185014597059, lng: 29.83048127109445},
+  {name: "TERSANE İLKOKULU", lat: 40.71625389175533, lng: 29.825635499997965},
+  {name: "ANITPARK KENT MEYDANI PARKI", lat: 40.720460643481374, lng: 29.821625928100904},
+ 
+  {name: "17 AĞUSTOS ORTAOKULU", lat: 40.74498472586973, lng: 30.016769455929392},
+  {name: "PARK ALANI", lat: 40.743394808795074, lng: 30.016153230787673},
+  {name: "PARK ALANI", lat: 40.73687388228565, lng: 30.014598699999997},
+  {name: "ÇELİK SANAYİ ORTAOKULU", lat: 40.766883729505636, lng: 29.798508274386144},
+  {name: "PARK ALANI", lat: 40.76248493230155, lng: 29.799313574416423},
+  {name: "PARK ALANI", lat: 40.751717446564285, lng: 29.794054604991363},
+  {name: "PARK ALANI", lat: 40.773997390126645, lng: 29.733350097476627},
+  {name: "PARK ALANI", lat: 40.772984275810984, lng: 29.737268178570314},
+  {name: "PARK ALANI", lat: 40.80758894501685, lng: 29.64517643647469},
+  {name: "PARK ALANI", lat: 40.80750388739825, lng: 29.64927669565648},
+  {name: "PARK ALANI", lat: 40.77882208346605, lng: 29.787828444654004},
+  {name: "KBB ÇAMLITEPE PARKI", lat: 40.786328219108356, lng: 29.625909449609676},
+  {name: "KİRAZLIYALI SAHİP PARKI", lat: 40.775798511769196, lng: 29.70242165372735},
+  {name: "DUMLUPINAR ORTAOKULU", lat: 40.71625334653991, lng: 29.828611074854802},
+  {name: "PARK ALANI", lat: 40.82193226835443, lng: 29.43320168661855},
+  
+  
+  {name: "ÖZEL EĞİTİM UYGULAMA MERKEZİ", lat: 40.8230635357008, lng: 29.4338254734806},
+  {name: "PARK ALANI", lat: 40.81926269529537, lng: 29.41875543218684},
+  {name: "HUZUR PARKI", lat: 40.82408702968237, lng: 29.416859541094},
+  
+
+
+ 
+  {name: "ORG. EŞREF BİTLİS PARKI", lat: 40.814889955568546, lng: 29.432557346031803},
+  {name: "PARK ALANI", lat: 40.795618774859996, lng: 29.39554386925868},
+  {name: "ESAD SAYDUK PARKI", lat: 40.79627833893423, lng: 29.404792817788845},
+ 
+  {name: "İLYASBEY ORTAOKULU", lat: 40.79262935087815, lng: 29.410510949772576},
+  {name: "Necip Fazıl Kısakürek Parkı", lat: 40.79259301306427, lng: 29.40805530904663},
+  {name: "PARK ALANI", lat: 40.685881936411235, lng: 29.961914600700425},
+  {name: "FUTBOL SAHASI.", lat: 40.69262054079159, lng: 29.628348326554185},
+  {name: "KARAMÜRSEL ANADOLU MESLEK VE KIZ MES.LİSESİ", lat: 40.692753152794644, lng: 29.625398858262347},
+  {name: "ERGÜN PENBE PARK", lat: 40.69474921025033, lng: 29.62502864398994},
+  {name: "AMİRAL KARAMÜRSEL İLKOKULU", lat: 40.69337061627067, lng: 29.616911570483996},
+  {name: "KARAMÜRSEL İMAM HATİP ORTAOKULU", lat: 40.691909825381046, lng: 29.619334886325547},
+  {name: "İLHAN ÇINAR ALANI", lat: 40.693430416771555, lng: 29.61352565505125},
+  {name: "KARAMÜRSEL SAĞLIK MESLEK LİSESİ ve HÜKÜMET KONAĞI ÖNÜ", lat: 40.6957824712693, lng: 29.617984248023898},
+  {name: "Necdet CALP İÖO.", lat: 40.692058424286564, lng: 29.625297647434664},
+  {name: "HÜKÜMET KONAĞI ÖNÜ", lat: 40.69482650179712, lng: 29.61706261658485},
+  {name: "YALAKDERE İ.Ö.O.", lat: 40.60800049370208, lng: 29.562861918166895},
+  {name: "BAHÇECİK MESLEKİ VE TEKNİK ANADOLU LİSESİ", lat: 40.7041907201653, lng: 29.901858699357554},
+  {name: "PARK ALANI", lat: 40.69673562466285, lng: 29.910674578979794},
+  {name: "YEŞİLKENT İLK VE ORTAOKULU", lat: 40.683666358504524, lng: 29.927557679683765},
+  {name: "CUMHURİYET PARKI", lat: 40.66862564760317, lng: 29.913080999150594},
+  
+  {name: "KÖRFEZ İLK VE ORTAOKULU", lat: 40.713532305656656, lng: 29.923404035693732},
+  {name: "BARBAROS İLK VE ORTAOKULU", lat: 40.70902728160416, lng: 29.92829547867486},
+  {name: "PARK ALANI", lat: 40.75895231369634, lng: 29.859607045183264},
+  {name: "ZÜBEYDE HANIM İLKOKULU", lat: 40.75895696046409, lng: 29.859612998385973},
+  {name: "7.BORU İLK VE ORTAOKULU", lat: 40.763677382994274, lng: 29.860905400443972},
+  {name: "ZİYA GÖKALP İLKOKULU", lat: 40.77207080673263, lng: 29.90189526056949},
+  {name: "PARK ALANI", lat: 40.76418719872599, lng: 29.92985766697999},
+  {name: "CUMHURİYET PARKI", lat: 40.76629358720376, lng: 29.928564377495977},
+  {name: "YENİCUMA PARKI", lat: 40.76336057424041, lng: 29.930936542079724},
+  {name: "İZMİT REHBERLİK VE ARAŞTIRMA MERKEZİ MÜDÜRLÜĞÜ", lat: 40.76505425475808, lng: 29.919430041049637},
+  {name: "AKÇAKOCA İLKOKULU", lat: 40.76728758834058, lng: 29.91982485158555},
+  {name: "PARK ALANI", lat: 40.76460922036129, lng: 29.920485435486814},
+  {name: "YENİMAHALLE İLKOKULU", lat: 40.76926543135856, lng: 29.886064200000032},
+  {name: "MEHMET SİNAN DERELİ ORTAOKULU", lat: 40.763495734288874, lng: 29.88742204763087},
+  {name: "FÜRSAN İLKOKUL VE ORTAOKULU", lat: 40.754484519884116, lng: 30.02372165465637}, {name: "PARK ALANI", lat: 40.80357369762017, lng: 29.963240196077297},
+{name: "PARK ALANI", lat: 40.80301742131185, lng: 29.971888565019192},
+{name: "PARK ALANI", lat: 40.803474233833875, lng: 29.97673893763578},
+
+{name: "SPOR ALANI", lat: 40.69510676724816, lng: 29.865861799798072},
+{name: "TABOSAN İLK VE ORTAOKULU", lat: 40.6969299000009, lng: 29.870407300001627},
+{name: "YENİKÖY MERKEZ PARKI", lat: 40.69590977039754, lng: 29.895772771165046},
+{name: "PARK ALANI", lat: 40.70471644315824, lng: 29.695534144540808},
+{name: "KBB ULAŞLI SPOR TESİSİ", lat: 40.706221366856376, lng: 29.705605248053683},
+{name: "KORAY AYDIN PARKI", lat: 40.711551133754526, lng: 29.807833400000803},
+{name: "ANADOLU LİSESİ", lat: 40.71440653651622, lng: 29.8060605426452}, 
+{name: "BARBAROS İLKOKULU", lat: 40.7178367932681, lng: 29.813777030204516},
+{name: "DONANMA İLKOKULU", lat: 40.723019865543975, lng: 29.79561897116534},
+{name: "PARK", lat: 40.70397776669051, lng: 29.858353602273365},
+{name: "İHSANİYE İLKOKULU", lat: 40.691054669798845, lng: 29.83403851612302},
+{name: "OKUL ARSASI", lat: 40.6864110400873, lng: 29.83203799646393},
+{name: "SPOR ALANI", lat: 40.68966959625149, lng: 29.83899552771807},
+{name: "CAHİT KÜLEBİ ORTAOKULU", lat: 40.69910484122476, lng: 29.814950514719033},
+{name: "ATATÜRK ORTAOKULU", lat: 40.71982590888404, lng: 29.785317840232395},
+{name: "SEYİT ONBAŞI PARKI", lat: 40.71980999677637, lng: 29.793103731734146},
+{name: "ÇINARLIK MEYDANI", lat: 40.72159528868702, lng: 29.78261490147748},
+{name: "MÜFİT SANER İLKOKULU", lat: 40.71886523685494, lng: 29.778965937146246},
+{name: "KOCATEPE ORTAOKULU", lat: 40.709148781423025, lng: 29.82631762236094},
+{name: "PİYALEPAŞA İLKOKULU", lat: 40.71262897252072, lng: 29.83302171008473},
+{name: "PARK ALANI", lat: 40.717431890235176, lng: 29.788392905888433},
+{name: "PARK", lat: 40.71610312180374, lng: 29.78937946953884},
+{name: "PARK", lat: 40.71334471179565, lng: 29.789266157101483},
+{name: "PARK-SPOR ALANI", lat: 40.710476833687665, lng: 29.792243548500817},
+{name: "UĞUR MUMCU ORTAOKULU", lat: 40.716666627993334, lng: 29.793157497694462},
+{name: "KBB BARBAROS HAYRETTİN PARKI", lat: 40.72379561436785, lng: 29.838982479055716},
+{name: "DENİZEVLER İLKOKULU", lat: 40.72190727676978, lng: 29.84277906353358},
+{name: "PARK ALANI", lat: 40.70420238570061, lng: 29.864288459673848},
+{name: "PARK", lat: 40.716348440237134, lng: 29.794128331059248},
+{name: "PARK", lat: 40.71686774466196, lng: 29.797771121670753},
+      
+{name: "PARK", lat: 40.71571384148859, lng: 29.801252064419014},
+{name: "OKUL ALANI", lat: 40.70744460673572, lng: 29.798150694421143},
+{name: "FEVZİYE CAMİ BAHÇESİ", lat: 40.76257964571581, lng: 29.925979291602083},
+{name: "ACISU PARKI", lat: 40.76440816301366, lng: 29.92359111779168},
+{name: "TİCARET ALANI", lat: 40.80029009791774, lng: 29.94939713020755},
+{name: "TİCARET ALANI", lat: 40.80223560508065, lng: 29.95220498013428},
+{name: "KILIÇARSLAN İLK VE ORTAOKULU", lat: 40.765579825687986, lng: 29.872155257303504},
+{name: "Atatürk Mesl.Tek.And. Lis.", lat: 40.765680369849555, lng: 29.867480869793116},
+{name: "PARK ALANI", lat: 40.76863370364218, lng: 29.915570953779547},
+{name: "ERTUĞRUL GAZİ İLKOKULU", lat: 40.77051678433953, lng: 29.915338399999975},
+{name: "KOCATEPE İLK VE ORTAOKULU", lat: 40.767139322969214, lng: 29.87395554606353},
+{name: "KURUÇEŞME GÜL PARKI", lat: 40.76982022774846, lng: 29.874394213143187},
+{name: "SARAYBAHÇE İLKOKULU", lat: 40.769504285822, lng: 29.935716884374415},
+{name: "YUVACIK İLK VE ORTAOKUL", lat: 40.688636040173805, lng: 29.965473453993628},
+{name: "PARK ALANI", lat: 40.72276421448434, lng: 29.993414450050153},
+{name: "VEZİR ÇİFTLİĞİ ORTAOKULU VE VALİ İHSAN DEDE İLKOKULU", lat: 40.7446061938268, lng: 29.961260260215948},
+{name: "RECEP KARAASLAN PARKI", lat: 40.70257823720264, lng: 29.949008434196347},
+{name: "KULLAR KARTONSAN İLK VE ORTAOKULU", lat: 40.718292103735266, lng: 29.98491859584231},
+{name: "PARK ALANI-BAŞİSKELE", lat: 40.7286318651985, lng: 29.971212835583096},
+{name: "GÖLCÜK İLKOKULU", lat: 40.71402349999813, lng: 29.81551517116523},
+{name: "PARK ALANI", lat: 40.71747720114251, lng: 29.751359303248833},
+{name: "TİCARET ALANI", lat: 40.69608366718849, lng: 29.82900990674678},
+{name: "ŞİRİNKÖY İLKOKULU", lat: 40.69801062693059, lng: 29.82002568468018},
+{name: "PARK ALANI", lat: 40.699342333975274, lng: 29.823579709337924},
+{name: "ÖMER SEYFETTİN ORTAOKULU", lat: 40.695899301598246, lng: 29.82760143558371},
+{name: "ALİ ÖZBAY MESLEK YÜKSEK OKULU", lat: 40.7157581319754, lng: 29.78166380000099},
+{name: "PARK ALANI", lat: 40.715778298546645, lng: 29.776927420013504},
+{name: "ROTTERDAM İLKOKULU", lat: 40.7044405726341, lng: 29.833800614719472},
+{name: "PARK", lat: 40.699316166729005, lng: 29.832286373919562},
+{name: "ATATÜRK ORTAOKULU", lat: 40.69115071026926, lng: 29.611747857109446},
+{name: "KAMURAN ALP ANADOLU LİSESİ", lat: 40.690230701145246, lng: 29.603837764852383},
+
+{name: "KARAMÜRSEL 100.YIL MESLEKİ VE TEK.EĞ.MERKEZİ", lat: 40.68626807561244, lng: 29.600148600148884},
+{name: "BEKİR İLHAMİ FATMA NEDİME CALP İLK VE ORTAOKULU", lat: 40.68559657891457, lng: 29.59186566168086},
+{name: "KARAMÜRSEL ANADOLU LİSESİ", lat: 40.68677210225598, lng: 29.581646869362956},
+
+{name: "KAYACIK CAMİ", lat: 40.69151507754907, lng: 29.610053606261342},
+{name: "LEVENT KIRCA İLKOKULU VE OYA BAŞAR ORTAOKULU", lat: 40.71862719161155, lng: 29.95081089876963},
+{name: "KURUÇEŞME PAZAR ALANI", lat: 40.77071059888307, lng: 29.875113163561444},
+{name: "LEYLA ATAKAN İLKOKULU", lat: 40.77442264085405, lng: 29.95188718041312},
+{name: "ULUBATLI HASAN ORTAOKULU", lat: 40.779149143612806, lng: 29.949166923031637},
+{name: "PARK ALANI", lat: 40.79509725674133, lng: 29.952524559154046},
+{name: "İZMİT LİSESİ MEZUNLARI DERNEĞİ HATIRA ORMANI", lat: 40.78936309078393, lng: 29.95364485597059},
+{name: "YAVUZ MESLEKİ VE TEKNİK ANADOLU LİSESİ", lat: 40.76415877084441, lng: 29.91737909398536},
+{name: "İZMİT LİSESİ", lat: 40.76618431071957, lng: 29.927293743044032},
+{name: "KARTEPE ANADOLU LİSESİ", lat: 40.75026316902145, lng: 30.014032296792664},
+{name: "ŞEHİT KAMİL AKGÜN PARKI", lat: 40.75429576363166, lng: 30.012469882209576},
+{name: "ALİ GÜNERİ İLK VE ORTAOKULU", lat: 40.735135380404685, lng: 30.149990623821832},
+{name: "DEREKÖY FUTBOL VE GÜREŞ SAHASI", lat: 40.68041661108738, lng: 29.55662465774115},
+
+{name: "PARK ALANI", lat: 40.769130377781124, lng: 29.974663507993693},
+{name: "YAHYA KAPTAN İLK VE ORTAOKULU", lat: 40.76624283709783, lng: 29.97429427929432},
+{name: "24 KASIM ANADOLU LİSESİ", lat: 40.7680894800384, lng: 29.976954645580005},
+{name: "YAHYA KAPTAN MESLEKİ VE TEKNİK ANADOLU LİSESİ", lat: 40.767046602699374, lng: 29.977911520595903},
+{name: "YAHYA KAPTAN ANADOLU LİSESİ", lat: 40.7668300553305, lng: 29.974142714071114},
+{name: "YENİŞEHİR KAPALI PAZAR", lat: 40.773720300000846, lng: 29.96149840674709},
+{name: "MİMAR SİNAN ORTAOKULU", lat: 40.77371460260164, lng: 29.96004257835846},
+{name: "YUNUS EMRE ANADOLU İMAM HATİP LİSESİ", lat: 40.76928917818909, lng: 29.9601824172811},
+{name: "ŞEHİT SELÇUK GÖKDAĞ İLKOKULU", lat: 40.76540057954155, lng: 29.9636328536091},
+{name: "ŞEHİT POLİS VOLKAN SABAZ İLKOKULU", lat: 40.77390036317379, lng: 29.962866698889606},
+{name: "YENİŞEHİR MAH. MEYDANI", lat: 40.77165285895703, lng: 29.964404950782342},
+{name: "CUMHURİYET PARKI", lat: 40.769913731338114, lng: 29.96515539999998},
+{name: "PAZAR ALANI", lat: 40.786277089308115, lng: 29.946331365354304},
+{name: "BELEDİYE HİZMET ALANI", lat: 40.78608128325644, lng: 29.945770475916568},
+{name: "PARK ALANI", lat: 40.7886490571243, lng: 29.94876961663171},
+{name: "OKUL ALANI", lat: 40.77991683103332, lng: 29.932133400000172},
+{name: "PARK ALANI", lat: 40.77405068376907, lng: 29.942835622592046},
+{name: "İMAM HATİP LİSESİ", lat: 40.77149576258128, lng: 29.947440535581947},
+{name: "PARK ALANI", lat: 40.777516786576115, lng: 29.9420713494333},
+{name: "PLAJYOLU PARKI", lat: 40.75898901872734, lng: 29.87728970248835},
+{name: "OKUL ALANI", lat: 40.760812950077856, lng: 29.86967189286254},
+{name: "75.YIL CUMHURİYET ORTAOKULU", lat: 40.76021343672559, lng: 29.877264100001348},
+{name: "FEVZİYE TEZCAN MESLEKİ VE TEKNİK ANADOLU LİSESİ", lat: 40.70599669999745, lng: 30.02389743558258},
+{name: "FORD OTOSAN ORTAOKULU", lat: 40.76647422209104, lng: 29.902034674587544},
+{name: "MEHMETÇİK İLKOKULU", lat: 40.76766453140701, lng: 29.905068953373274},
+{name: "MEHMET AKİF İLKOKULU", lat: 40.7683906313813, lng: 29.932719200000836},
+{name: "DOĞU KIŞLA PARKI", lat: 40.765637564861656, lng: 29.949998333408743},
+{name: "NAMIK KEMAL ANADOLU KEMAL LİSESİ", lat: 40.76760780359586, lng: 29.956234921590557},
+{name: "NİHAT ERİM PARKI", lat: 40.76682423712597, lng: 29.95341402883782},
+{name: "TÜRK PİRELLİ İLKOKULU", lat: 40.76088654321217, lng: 29.950781694901636},
+{name: "42 EVLER PARKI", lat: 40.76089386322458, lng: 29.949480535583294},
+{name: "17 AĞUSTOS PARKI", lat: 40.77074337012878, lng: 30.005772179706806},
+{name: "PARK ALANI", lat: 40.77662259999956, lng: 30.01513316441806},
+{name: "Yazı Sokak", lat: 40.79722326384802, lng: 29.36710445569184},
+{name: "Park", lat: 40.78840897605068, lng: 29.38813558636403}
+    ];
+    
+    const hospitals = [
+  {name: "Özel Novadent Ağız ve Diş Sağlığı Polikliniği", lat: 40.77840887243709, lng: 29.40441248415177},     
+  {name: "Kocaeli Darıca Farabi Eğitim Ve Araştırma Hastanesi", lat: 40.77079724956755, lng: 29.406857741970136},
+  {name: "Darıca Özel Hayat Tıp Merkezi", lat: 40.7783720419618, lng: 29.40487968460165},
+  {name: "Büyük Anadolu Hastanesi Darıca", lat: 40.78975954154755, lng: 29.36716696312869},
+  {name: "Özel Hospital Park Darıca Hastanesi", lat: 40.79203062075791, lng: 29.36757379327706},
+  {name: "Gebze Fatih Devlet Hastanesi", lat: 40.7902808316168, lng: 29.420533279851018},
+  {name: "Özel Gebze Medicalpark Hastanesi", lat: 40.78907694784694, lng: 29.419896896328563},
+  {name: "Merkez Prime Hastanesi", lat: 40.82114269505777, lng: 29.417584814140508},
+  {name: "Fatih Devlet Hastanesi Ek Yerleşkesi", lat: 40.80825737226742, lng: 29.392720963088394},
+  {name: "Şifa Tıp Merkezi", lat: 40.812773049729074, lng: 29.3920035425174},
+  {name: "Johns Hopkins Anadolu Sağlık Merkezi Hastanesi", lat: 40.81953219903798, lng: 29.351723866292577},
+  {name: "Anadolu Sağlık Merkezi Hastanesi", lat: 40.81902814627424, lng: 29.353128857836726},
+  {name: "DİLOVASI DEVLET HASTANESİ", lat: 40.788333829336835, lng: 29.556274361561332},
+  {name: "Sağlık Bilimleri Derince Eğitim ve Araştırma Hastanesi", lat: 40.76210173032388, lng: 29.812880460620075},
+  {name: "İzmit Seka Devlet Hastanesi", lat: 40.763795610665206, lng: 29.900426115998062},
+  {name: "Özel Donatım Ağız ve Diş Sağlığı Merkezi İzmit", lat: 40.76322811427593, lng: 29.93494519744883},
+  {name: "Kocaeli Devlet Hastanesi", lat: 40.76732377215681, lng: 29.938286334702422},
+  {name: "Dünyagöz İzmit Hastanesi", lat: 40.76543462444033, lng: 29.943120626959686},
+  {name: "Atakent Cihan Hastanesi", lat: 40.77025117982974, lng: 29.961065709704645},
+  {name: "Özel Çağın Göz Hastanesi", lat: 40.76447245805469, lng: 29.967438118608886},
+  {name: "Medical Park Kocaeli Hastanesi", lat: 40.75906592962871, lng: 29.980595529432115},
+  {name: "Özel Medar Hastanesi Gölcük", lat: 40.70596907143124, lng: 29.84747273997747},
+  {name: "Karamürsel Devlet Hastanesi", lat: 40.684311994457765, lng: 29.58871364460137},
+  {name: "Çayırova Tıp Merkezi", lat: 40.83118885561593, lng: 29.379613472104317},
+  {name: "Çayırova Semt Polikiliniği", lat: 40.825255408114884, lng: 29.384065630478062},
+  {name: "İzmit Seka Devlet Hastanesi Kartepe Semt Polikliniği", lat: 40.75395302900248, lng: 30.0226375047426},
+      
+       { "name": "Kocaeli Şehir Hastanesi", "lat": 40.78357689506826, "lng": 29.96043863911232 },
+  { "name": "Darıca Ağız Ve Diş Sağlığı Merkezi", "lat": 40.771205087138846, "lng": 29.408008233792202 },
+  { "name": "Anadolu Ortopedi Ortez Protez Yapım ve Uygulama Merkezi", "lat": 40.772484676041465, "lng": 29.40389004810115 },
+  { "name": "Medical Park Gebze", "lat": 40.804234649488656, "lng": 29.439897363391445 },
+  { "name": "ÇözümMed İstanbul Mobil Sağlık Hizmetleri Tic. Ltd. Şti. GEBZE ŞUBESİ", "lat": 40.80656549248293, "lng": 29.44122028439645 },
+  { "name": "Özel Yüzyıl Hastanesi", "lat": 40.80178411199694, "lng": 29.439911782642245 },
+  { "name": "İlyas Bey Sağlıklı Yaşam Merkezi", "lat": 40.800215406476966, "lng": 29.439811506684222 },
+  { "name": "Özel Körfez Marmara Hastanesi", "lat": 40.75996972192117, "lng": 29.78759841805869 },
+  { "name": "Körfez Devlet Hastanesi", "lat": 40.77558184115665, "lng": 29.782790668739292 },
+    ];
+    const bakeries = [
+  {name: "Berberoğlu Fırın", lat: 40.7795316164971, lng: 29.39989695245814},
+  {name: "Bayındırlar Fırın - Sırasöğütler", lat: 40.78502917681876, lng: 29.391002582275387},
+  {name: "Yeni Bayramoğlu Unlu Mamülleri", lat: 40.7987333213802, lng: 29.367931386902963},
+  {name: "Gün-Pa Unlu Mamülleri", lat: 40.783644423772515, lng: 29.40983970970023},    
+  {name: "Petek Fırın", lat: 40.77855837090626, lng: 29.376188814655038}, 
+  {name: "Yeşil Darıca Fırın", lat: 40.75995542836824, lng: 29.386258966218783},
+  {name: "Güldüren Fırın", lat: 40.801783555113204, lng: 29.388257406154445},
+  {name: "Has-er Unlu Mamülleri", lat: 40.76323019830884, lng: 29.39054860575312},
+  {name: "Bayramoğlu Bereket Fırını", lat: 40.79927111100441, lng: 29.367879626393066},
+  {name: "Taddoy Fırın", lat: 40.81854544929556, lng: 29.415679095848663},
+  {name: "Taşçıoğlu Unlu Mamülleri", lat: 40.76479038649423, lng: 29.89417862778682},
+  {name: "Ayköşe Unlu Mamülleri", lat: 40.77462337956917, lng: 29.980055195849342},
+  {name: "Bayındırlar Fırın Darıca", lat: 40.76643023309913, lng: 29.38662188997713},
+  {name: "Çelikler Fırın", lat: 40.785094935609976, lng: 29.37747322277432},
+  {name: "Bayındırlar Fırın Gebze", lat: 40.78503300451037, lng: 29.390984757160233},
+  {name: "Gebze Unlu Mamülleri", lat: 40.78365539067878, lng: 29.414894320965317},
+  {name: "Beylikbağı Tadım Ekmek Fırını", lat: 40.802989426043055, lng: 29.389634686865648},
+  {name: "Kristal Fırın", lat: 40.79749816833517, lng: 29.43951044492209},
+  {name: "Hakan Fırın", lat: 40.801470357110105, lng: 29.43830170663509},
+  {name: "Çağlayan Fırın", lat: 40.802044310973535, lng: 29.43138356060661},
+  {name: "Gumsaş A.Ş. Fırın", lat: 40.80593495913981, lng: 29.433471790228392},
+  {name: "Kaçkar Ekmek Fırını", lat: 40.80872090902424, lng: 29.45316453656869},
+  {name: "Çayırova Fırın", lat: 40.8169658355856, lng: 29.394835914170955},
+  {name: "Çayırova Ekmek Fırını", lat: 40.816852343273574, lng: 29.371078840435857},
+  {name: "Duman Kardeşler Odun Ekmeği", lat: 40.827637879810936, lng: 29.374078268924944},
+  {name: "Ardem Ekmek Fırını", lat: 40.82988709547085, lng: 29.378808282364496},
+  {name: "Gün-Pa Ekmek Fırını", lat: 40.776178747349064, lng: 29.40343155956624},
+  {name: "Atalar Ekmek", lat: 40.777084393302005, lng: 29.412716276557052},
+  {name: "Fırınım", lat: 40.78319165532334, lng: 29.414293763958764},
+  {name: "Yeşil İspir Unlu Mamülleri", lat: 40.780076897988195, lng: 29.39872288549517},
+  {name: "Cevizli Fırın", lat: 40.78229726370186, lng: 29.39631364568632},
+  {name: "Nene Hatun Unlu Mamülleri", lat: 40.779566110554605, lng: 29.391242614863398},
+  {name: "Huzur Fırın", lat: 40.77809071431175, lng: 29.386979341536993},
+  {name: "Tandır Ekmek Fırını", lat: 40.781223699950296, lng: 29.384783554626644},
+  {name: "Külekçi Fırın", lat: 40.79387461494771, lng: 29.372474840090714},
+  {name: "Tandır Fırın", lat: 40.78732975563822, lng: 29.373050208410508},
+  {name: "Ardahan Ekmek Fırını", lat: 40.77719204499741, lng: 29.404570154291346},
+  {name: "Gumsaş Odun Ekmeği", lat: 40.80847830977418, lng: 29.431493125197218},
+  {name: "Gebze Safranbolu Fırını", lat: 40.8117012858715, lng: 29.383198071227287},
+  {name: "Mapavri Fırın Cafe", lat: 40.82857353748546, lng: 29.419929304652864},
+  {name: "Gökçe Taş Ekmek Fırını", lat: 40.81416647154465, lng: 29.58191787796443},
+  {name: "İzmit Simit Fırını", lat: 40.773997052044834, lng: 29.526424021902084},
+  {name: "Harman Unlu Mamüller", lat: 40.78761232947613, lng: 29.534018785776716},
+  {name: "Mevlana Ekmek Unlu Mamülleri", lat: 40.79072273371645, lng: 29.54558919562613},
+  {name: "Taştan Unlu Mamülleri", lat: 40.79098176080264, lng: 29.54687816218012},
+  {name: "Tavşancıl Ekmek Fırını", lat: 40.77344493101763, lng: 29.575157689911403},
+  {name: "Karadeniz Ekmek Fırını", lat: 40.786685072484566, lng: 29.535319515099197},
+  {name: "Bayramoğlu Pastanesi", lat: 40.78518517337097, lng: 29.61706730513144},
+  {name: "Ekmek Dünyası", lat: 40.77134873209452, lng: 29.74171618115812},
+  {name: "Çakıroğlu Fırın", lat: 40.76925546706826, lng: 29.754781710320724},
+  {name: "Saygın Fırın", lat: 40.775674669853366, lng: 29.80387666349671},
+  {name: "Baltalar Ekmek Fırını", lat: 40.75273315342545, lng: 29.7952822325413},
+  {name: "Kardeşler Fırın", lat: 40.75482540857526, lng: 29.81431930076459},
+  {name: "Somuncu Baba Ekmek Fırını", lat: 40.76397565495918, lng: 29.847182865491263},
+  {name: "Bizim Fırın", lat: 40.76414908635171, lng: 29.883715888475308},
+  {name: "Aykanlar Ekmek Fırını", lat: 40.770045976199896, lng: 29.912964529028056},
+  {name: "Ceylan Fırın", lat: 40.76694180113089, lng: 29.935324595538162},
+  {name: "Mevlana Ekmek Fırını", lat: 40.76603836928807, lng: 29.95550103341271},
+  {name: "Niksar Unlu Mamülleri", lat: 40.79263378764198, lng: 29.97554920384321},
+  {name: "Damak Fırın", lat: 40.75574195519834, lng: 30.018016540018028},
+  {name: "Mancar Fırın", lat: 40.75561941765719, lng: 30.017939411072074},
+  {name: "Seymen 41 Fırın", lat: 40.70477679195951, lng: 29.90311145673883},
+  {name: "61 Ekmek Fırını", lat: 40.70702185771208, lng: 29.847934635137335},
+  {name: "Dumanoğlu Fırın", lat: 40.707385087093236, lng: 29.848088014534092},
+  {name: "61 Fırın", lat: 40.70725856723173, lng: 29.848268192316418},
+  {name: "Tadım Kara Fırın", lat: 40.71039255325383, lng: 29.831100100386298},
+  {name: "Ozmar Ekmek Fırını", lat: 40.702526453991176, lng: 29.825876240179632},
+  {name: "Beyaz Saray Ekmek Fırını", lat: 40.68582837073597, lng: 29.966123968841682},
+  {name: "Fırın", lat: 40.74204216789043, lng: 29.957866373667215},
+  {name: "Fırın", lat: 40.76569237046569, lng: 29.876733812622007},
+  {name: "Uygar Fırın", lat: 40.76242507582924, lng: 29.922176545857024},
+  {name: "Aynalı Fırın", lat: 40.76622881782941, lng: 29.93070125804078},
+  {name: "Başak Ekmek", lat: 40.76473643637158, lng: 29.937148479545968},
+  {name: "Ubaylar Ekmek Fırını", lat: 40.765355203614924, lng: 29.947486810393766},
+  {name: "Ayköşe Unlu Mamülleri", lat: 40.774609431030996, lng: 29.980069209459042},
+  {name: "Kalyoncular Ekmek", lat: 40.79213786268855, lng: 29.97533057729884},
+  {name: "Maya Fırın", lat: 40.74253557418501, lng: 30.02195241215186},
+  {name: "Sümbüle Ekmek Fırını", lat: 40.72962221111531, lng: 30.04141216958304},
+  {name: "Rahmiye Merkez Ekmek Fırını", lat: 40.71397753693487, lng: 30.01286565438193},
+  {name: "Zerey Ekmek Fırını", lat: 40.689967701004335, lng: 30.031698118917575},
+  {name: "Ekmek Fırını", lat: 40.687749743285494, lng: 29.9671291403597},
+  {name: "Kuzina Ekmek ve Pasta", lat: 40.69226407048731, lng: 29.969938606226304},
+  {name: "Huzur Ekmek ve Pasta", lat: 40.69682508663065, lng: 29.95715223765032},
+  {name: "Ubaylar Karadeniz Ekmek Fırını", lat: 40.72311322341179, lng: 29.95575245430272},
+  {name: "Altınkent Ekmek Fırını", lat: 40.7033033016953, lng: 29.940466467852225},
+  {name: "Ubaylar", lat: 40.71007764302901, lng: 29.9236443299063},
+  {name: "Büyük Damlar Ekmek Fırını", lat: 40.688894695950594, lng: 29.921070932554425},
+  {name: "Ekmek Fırını", lat: 40.66820732171483, lng: 29.915565101918098},
+  {name: "Tadım Unlu Mamüller", lat: 40.71941664088606, lng: 29.821913395303767},
+  {name: "Bäckerei Hochstatter - Gölcük Ekmek Fırını", lat: 40.7196669751207, lng: 29.821860981195684},
+  {name: "Vakfıkebirliler Ekmek Fırını", lat: 40.710839231332194, lng: 29.806286267553933},
+  {name: "Kalyon Ekmek Fırını", lat: 40.71006172206523, lng: 29.79362570112812},
+  {name: "Ulusoy Ekmek Fırını", lat: 40.71735778235466, lng: 29.782957478739487},
+  {name: "Ekizoğlu Unlu Mamülleri", lat: 40.68957088746574, lng: 29.60149091496818},
+  {name: "Körfez Taş Fırın Ekmek", lat: 40.71603161259238, lng: 29.753734989225798},
+  {name: "Özsoy Unlu Mamülleri", lat: 40.720102769794366, lng: 29.780142545849607},
+  {name: "Oğuzlar Simit Fırını", lat: 40.717556265583816, lng: 29.782748229727904},
+  {name: "Aydın Ekmek - Pide Salonu", lat: 40.701222790807805, lng: 29.67357099528355},
+  {name: "Kaçkar Ekmek Fırını", lat: 40.69750742697471, lng: 29.65360064233546},
+  {name: "Ekiz Unlu Mamüller", lat: 40.689944694841635, lng: 29.60787890129963},
+  {name: "Kocaçınar Unlu Mamülleri", lat: 40.69117241457718, lng: 29.619594805864658},
+  {name: "Rizeliler Fırın", lat: 40.69364884781332, lng: 29.615096218103027},
+  {name: "Bereket Kara Fırın", lat: 40.69402653733568, lng: 29.616345027786437},
+  {name: "EnginDeniz Unlu Mamülleri", lat: 40.69177481825131, lng: 29.61992334531209},
+  {name: "Ekşioğlu Ekmek Fırını", lat: 41.15961627351192, lng: 30.224104537748925},
+  {name: "Ekşioğlu Ekmek Fırını", lat: 41.16999366602658, lng: 30.227831985831724},
+  {name: "Kumcağız Yöresel Ekmek Fırını", lat: 41.1582586537759, lng: 30.230676801422288},
+  {name: "Bağırganlı Ekmek Fırını", lat: 41.12712428147704, lng: 30.010825289974175},
+  {name: "Naiboğlu Ekmek Fırını", lat: 41.07389204582869, lng: 30.160615505666783},
+  {name: "Ata Trabzon Ekmek Fırını", lat: 41.06654046223256, lng: 30.158062232865053},
+  {name: "Alkan Fırın Kafe", lat: 41.07046888378975, lng: 30.149389089466315},
+  {name: "Başak Taş Fırın", lat: 41.070243010096824, lng: 30.151375058493176},
+  {name: "Koç Ekmek Fırını", lat: 41.07036456844169, lng: 30.151574655316153},
+  {name: "Kandıra Simit Fırını", lat: 41.070789733107965, lng: 30.15218361145492},
+  {name: "Doğal Trabzon Ekmek Fırını", lat: 41.00858217008053, lng: 30.104054904045288}
+    ];
+    const banks = [
+      {name: "Ziraat Bankası Darıca Şubesi", lat: 40.758802517680394, lng: 29.383990163063583},
+  {name: "Halkbank Darıca Şubesi", lat: 40.76235743425125, lng: 29.38750527678254},
+  {name: "Türkiye İş Bankası Darıca Şubesi", lat: 40.76276611451223, lng: 29.39003451059424},
+  {name: "VakıfBank Darıca Şubesi", lat: 40.774121005550754, lng: 29.401671928181866},
+  {name: "Garanti BBVA Darıca Şubesi", lat: 40.77575455019785, lng: 29.403002630109683},
+  {name: "Kuveyt Türk Darıca Şubesi", lat: 40.77657949010734, lng: 29.404014226056717},
+  {name: "TEB Darıca Şubesi", lat: 40.77688654629448, lng: 29.404341744366562},
+  {name: "Yapı Kredi Bankası Darıca Şubesi", lat: 40.776646696652854, lng: 29.404432781552362},
+  {name: "Garanti BBVA Bankamatik", lat: 40.777836030395314, lng: 29.4054378895507},
+  {name: "Türkiye İş Bankası Bankamatik", lat: 40.777823296245, lng: 29.40542558411376},
+  {name: "Yapı Kredi Bankamatik", lat: 40.77785147728689, lng: 29.405453777360922},
+  {name: "Akbank Bankamatik", lat: 40.777866130357545, lng: 29.40545958700034},
+  {name: "Akbank Bankamatik", lat: 40.80330282930339, lng: 29.391277221455702},
+  {name: "Ziraat Bankası Beylikbağı-Gebze Şubesi", lat: 40.80449952768826, lng: 29.39073415818623},
+  {name: "Denizbank Gebze Ticari Merkez Şubesi", lat: 40.789380426152015, lng: 29.420292153465528},
+  {name: "Akbank Bankamatik", lat: 40.76208575938532, lng: 29.38888394561197},
+  {name: "Halkbank Gebze Bağdat Caddesi Şubesi", lat: 40.79599184331917, lng: 29.42254677399053},
+  {name: "Ziraat Bankası Hacıhalil Mah. Şubesi", lat: 40.79491260170674, lng: 29.43032383910803},
+  {name: "Akbank Darıca Şubesi", lat: 40.77825397586054, lng: 29.40585221403022},
+  {name: "Ziraat Bankası İstasyon Cad. Şubesi", lat: 40.77920050776204, lng: 29.406099999957206},
+  {name: "Türkiye İş Bankası İstasyon Cad. Şubesi", lat: 40.779385013162404, lng: 29.40639313143849},
+  {name: "Yapıkredi Bankamatik", lat: 40.76270560546743, lng: 29.38957860785402},
+  {name: "Garanti BBVA Bankamatik", lat: 40.78048913322818, lng: 29.408970102609935},
+  {name: "Qnb Finasbank Bankamatik", lat: 40.78053280004962, lng: 29.40885476763114},
+  {name: "Türkiye Finans", lat: 40.791632004260364, lng: 29.425112856494643},
+  {name: "Anadolubank", lat: 40.79191428776666, lng: 29.426272991973462},
+  {name: "Teb Gebze E5 Şubesi", lat: 40.79262700857593, lng: 29.428257425908495},
+  {name: "Kuveyt Türk Gebze Şubesi", lat: 40.79434915235733, lng: 29.429897676515253},
+  {name: "Fibabanka", lat: 40.794196058837834, lng: 29.42980583757912},
+  {name: "Akbank Gebze Şubesi", lat: 40.79568200639768, lng: 29.43139715143717},
+  {name: "Teb Bankamatik", lat: 40.79596578414701, lng: 29.431722391342984},
+  {name: "VakıfBank", lat: 40.7954844688472, lng: 29.43060476313738},
+  {name: "Garanti BBVA Gebze Çarşı Şubesi", lat: 40.79558639758372, lng: 29.432266430969968},
+  {name: "Ziraat Katılım Gebze Şubesi", lat: 40.795515835656424, lng: 29.432293464904394},
+  {name: "Halkbank Gebze Yeniçarşı Şubesi", lat: 40.79526993068608, lng: 29.433227229097128},
+  {name: "Albaraka Türk Gebze Şubesi", lat: 40.79476082385496, lng: 29.432646394599903},
+  {name: "Vakıfkatılım", lat: 40.79510698438665, lng: 29.432989387334842},
+  {name: "Emlakkonut", lat: 40.795049551209104, lng: 29.433027319499544},
+  {name: "Yapıkredi Gebze Şubesi", lat: 40.79697739717511, lng: 29.431991338559882},
+  {name: "Türkiye İş Bankası Gebze Şubesi", lat: 40.79750156545939, lng: 29.431981224286332},
+  {name: "Ziraat Bankası Gebze Şubesi", lat: 40.79731374720368, lng: 29.432007162075735},
+  {name: "Denizbank Gebze Şubesi", lat: 40.79699183752889, lng: 29.434045434213974},
+  {name: "Akbank Gebze Bağdat Caddesi", lat: 40.79595301076825, lng: 29.423169963812796},
+  {name: "Yapıkredi", lat: 40.79811324252511, lng: 29.42784440748246},
+  {name: "Garanti BBVA Gebze Bağdat Cad. Şubesi", lat: 40.800990940268655, lng: 29.433018587813375},
+  {name: "Denizbank Gebze Şubesi", lat: 40.80135174901753, lng: 29.433768466069886},
+  {name: "Akbank Bankamatik", lat: 40.801250895569225, lng: 29.433176692222123},
+  {name: "YapıKredi", lat: 40.80124980947338, lng: 29.43316189327548},
+  {name: "Qnb Finasbank Bankamatik", lat: 40.80124879428306, lng: 29.433127695113548},
+  {name: "Ziraat Katılım Bankası İbrahim Ağa Şubesi", lat: 40.80187783215485, lng: 29.431188904847023},
+  {name: "Ziraat Bankası Şekerpınar Şubesi", lat: 40.80344554290595, lng: 29.431098662271562},
+  {name: "KuveytTürk İbrahim Ağa Şubesi", lat: 40.80368892629819, lng: 29.431026913203144},
+  {name: "Garanti BBVA İbrahim Ağa Şubesi", lat: 40.804469013996496, lng: 29.43090971343037},
+  {name: "Yapıkredi Bankası", lat: 40.80452403046334, lng: 29.43085952825845},
+  {name: "Vakıf Katılım İbrahim Ağa Şubesi", lat: 40.80477528072319, lng: 29.430734163728264},
+  {name: "Qnb Finasbank İbrahim Ağa Şubesi", lat: 40.804898356926444, lng: 29.43078585131663},
+  {name: "Yapıkredi Bankası İbrahim Ağa Cad.", lat: 40.804806346621156, lng: 29.431020207680312},
+  {name: "Albaraka Türk İbrahim Ağa Şubesi", lat: 40.80512569788453, lng: 29.43089543272868},
+  {name: "Vakıfbank İbrahim Ağa Şubesi", lat: 40.805211117112655, lng: 29.430949978367945},
+  {name: "Türkiye İş Bankası İbrahim Ağa Şubesi", lat: 40.80535848314231, lng: 29.431097214498067},
+  {name: "Akbank İbrahim Ağa Gebze Şubesi", lat: 40.80577452548795, lng: 29.431152899190774},
+  {name: "Garanti BBVA Gebze Bağdat Cad. Şubesi", lat: 40.800997261774036, lng: 29.43302151136572},
+  {name: "Şekerbank Gebze Şubesi", lat: 40.801336013589285, lng: 29.433721862688245},
+  {name: "DenizBank Gebze Şubesi", lat: 40.8013431199121, lng: 29.433772824664956},
+  {name: "VakıfBank Sultan Orhan Şubesi", lat: 40.80241656575446, lng: 29.440106038605137},
+  {name: "Ziraat Bankası Sultan Orhan Şubesi", lat: 40.80261751164013, lng: 29.441036706238847},
+  {name: "Halkbank Gebze Şubesi", lat: 40.797387668981564, lng: 29.436420898535083},
+  {name: "KuveytTürk Gebze Çarşı Şubesi", lat: 40.79885979651353, lng: 29.434384713205166},
+  {name: "Akbank Bankamatik", lat: 40.79829338587207, lng: 29.43601767251337},
+  {name: "Türkiye İş Bankası Ali Rıza Efendi Cad.", lat: 40.80009250070494, lng: 29.43651728873791},
+  {name: "Garanti BBVA Bankamatik", lat: 40.80011088121574, lng: 29.43692141019396},
+  {name: "Teb Bankamatik", lat: 40.80167439918431, lng: 29.43971888941805},
+  {name: "Yapıkredi Bankamatik", lat: 40.80170630276128, lng: 29.439714252903535},
+  {name: "Qnb Bankamatik", lat: 40.801689044641854, lng: 29.43971492345573},
+  {name: "Türkiye İş Bankası", lat: 40.802495602165465, lng: 29.440115166671387},
+  {name: "Türkiye İş Bankası Gebze Oto Sanayi Şubesi", lat: 40.80348158096195, lng: 29.462898597076137},
+  {name: "Halkbank Gebze Hasköy Şubesi", lat: 40.804155641276026, lng: 29.464374482540524},
+  {name: "Garanti BBVA Gebze Hasköy Şubesi", lat: 40.80509972026728, lng: 29.467875771133816},
+  {name: "Yapıkredi Bankası", lat: 40.805109871581095, lng: 29.467751510429576},
+  {name: "Vakıfbank Çayırova Şubesi", lat: 40.816615144834934, lng: 29.368490855983026},
+  {name: "Vakıf Katılım Çayırova Şubesi", lat: 40.816629178227174, lng: 29.368479725641084},
+  {name: "Denizbank Çayırova Şubesi", lat: 40.81697667511256, lng: 29.369197097972265},
+  {name: "Türkiye Finans Çayırova Şubesi", lat: 40.820360398082755, lng: 29.3712755797391},
+  {name: "KuveytTürk Çayırova Şubesi", lat: 40.82050280631853, lng: 29.371138215020245},
+  {name: "Yapıkredi Bankası Çayırova Şubesi", lat: 40.82070877013399, lng: 29.371444241776864},
+  {name: "Türkiye İş Bankası Çayırova Şubesi", lat: 40.82098463246684, lng: 29.371375065410387},
+  {name: "Yapıkredi Bankası", lat: 40.81976122095122, lng: 29.370974803661227},
+  {name: "Akbank", lat: 40.823476873506124, lng: 29.372054747726583},
+  {name: "Garanti BBVA Çayırova Şubesi", lat: 40.82519530294189, lng: 29.372696217755255},
+  {name: "Ziraat Katılım Bankası Çayırova Şubesi", lat: 40.825101918455005, lng: 29.372696217755255},
+  {name: "Ziraat Katılım Bankası Çayırova Şubesi", lat: 40.825738834815425, lng: 29.37307099137075},
+  {name: "Halkbank Çayırova Şubesi", lat: 40.8264131992419, lng: 29.373670416920508},
+  {name: "Akbank Güzeller Osb Şubesi", lat: 40.84099597271631, lng: 29.434156242969642},
+  {name: "Halkbank Güzeller Osb Şubesi", lat: 40.8411880668107, lng: 29.43430286877951},
+  {name: "KuveytTürk Güzeller Osb Şubesi", lat: 40.84115052736693, lng: 29.43430420988644},
+  {name: "Albaraka Güzeller Osb Şubesi", lat: 40.84098717981201, lng: 29.43411645525496},
+  {name: "Şekerbank Güzeller Osb Şubesi", lat: 40.84094279841193, lng: 29.434085953841024},
+  {name: "Akbank Merkezi", lat: 40.87153712094695, lng: 29.390103034061635},
+  {name: "Türkiye İş Bankası Dilovası Şubesi", lat: 40.789125907241505, lng: 29.533120025970153},
+  {name: "Türkiye İş Bankası Bankamatik", lat: 40.78883153516294, lng: 29.532196377797597},
+  {name: "Vakıfbank Dilovası Şubesi", lat: 40.7892776988776, lng: 29.531695311478675},
+  {name: "Halkbank Dilovası Şubesi", lat: 40.787051769493225, lng: 29.534497647918954},
+  {name: "Ziraat Bankası Dilovası Şubesi", lat: 40.78686804030016, lng: 29.534728633746703},
+  {name: "Garanti BBVA Bankamatik", lat: 40.78585365110267, lng: 29.538889436071624},
+  {name: "Teb Bankamatik", lat: 40.78586320514905, lng: 29.53884994810898},
+  {name: "Türkiye İş Bankası Bankamatik", lat: 40.78549038803494, lng: 29.540113262168017},
+  {name: "Akbank Bankamatik", lat: 40.785474085997485, lng: 29.540167487101566},
+  {name: "Vakıfbank Dilovası İmes Vakıfbank Bankamatik", lat: 40.82907403203486, lng: 29.569815131018665},
+  {name: "KuveytTürk", lat: 40.829092028761835, lng: 29.56983799770795},
+  {name: "Ziraat Bankası", lat: 40.829087462322484, lng: 29.569832633291448},
+  {name: "Yapıkredi", lat: 40.82909456567329, lng: 29.569848055992942},
+  {name: "İş Bankası", lat: 40.82911181666495, lng: 29.569856102619802},
+  {name: "Türkiye İş Bankası Hereke Şubesi", lat: 40.786054356727554, lng: 29.61572769377147},
+  {name: "Yapıkredi Bankamatik", lat: 40.78482667600337, lng: 29.617589472846223},
+  {name: "Ziraat Bankası Hereke Şubesi", lat: 40.784789927205104, lng: 29.617002338152794},
+  {name: "Türkiye İş Bankası Yarımca Şubesi", lat: 40.770606491478404, lng: 29.743318777943486},
+  {name: "Ziraat Bankası Yarımca Şubesi", lat: 40.77065898842908, lng: 29.745068533670242},
+  {name: "Akbank- DenizBank- Qnb- Albaraka- İş Bankası- Halkbank- Yapıkredi", lat: 40.77191373979765, lng: 29.74558952132979},
+  {name: "Garanti BBVA Bankamatik", lat: 40.773803676464446, lng: 29.746295729104418},
+  {name: "Yapıkredi Bankamatik", lat: 40.77390793405323, lng: 29.7453685149944},
+  {name: "Vakıf Katılım Körfez Şubesi", lat: 40.76133110590938, lng: 29.787314488768914},
+  {name: "HalkBank Körfez Şubesi", lat: 40.760599815609524, lng: 29.78647052046008},
+  {name: "Qnb Bankamatik", lat: 40.76097882166064, lng: 29.78637113436857},
+  {name: "Akbank Körfez Şubesi", lat: 40.761045914349594, lng: 29.788105298246165},
+  {name: "Ziraat Bankası Körfez Şubesi", lat: 40.7609760232367, lng: 29.788170093504995},
+  {name: "Ziraat Katılım Körfez Şubesi", lat: 40.76075693893915, lng: 29.78878225659969},
+  {name: "Vakıfbank Körfez Şubesi", lat: 40.76044473521797, lng: 29.78933167287279},
+  {name: "Garanti Bankası Şubesi", lat: 40.76042965990584, lng: 29.7893964125328},
+  {name: "HalkBank Körfez Şubesi", lat: 40.76033027585566, lng: 29.789985604572966},
+  {name: "Denizbank Körfez Şubesi", lat: 40.76006827372971, lng: 29.790655632958366},
+  {name: "Teb Körfez Şubesi", lat: 40.760016895892306, lng: 29.79070879517263},
+  {name: "KuveytTürk Körfez Şubesi", lat: 40.76000749954999, lng: 29.79082614181719},
+  {name: "Türkiye Finans Körfez Şubesi", lat: 40.759977278871744, lng: 29.79095279839158},
+  {name: "Albaraka Türk Körfez Şubesi", lat: 40.759745782922714, lng: 29.79156339330133},
+   {name: "Yapı Kredi Derince Şubesi", lat: 40.75632832507676, lng: 29.829204614558197},
+  {name: "Türkiye İş Bankası Derince Şubesi", lat: 40.756373452281615, lng: 29.829535864802338},
+  {name: "Vakıfbank Derince Şubesi", lat: 40.756393334725054, lng: 29.829682048545223},
+  {name: "Garanti BBVA Derince Şubesi", lat: 40.75639477139143, lng: 29.82990774492768},
+  {name: "Ziraat Bankası Derince/Kocaeli Şubesi", lat: 40.75638686972941, lng: 29.829974126215912},
+  {name: "Halkbank Derince Şubesi", lat: 40.75637526709143, lng: 29.830115815233153},
+  {name: "Denizbank Derince Şubesi", lat: 40.75636714229191, lng: 29.83032240416659},
+  {name: "Kuveyt Türk Derince Şubesi", lat: 40.75714173942737, lng: 29.83114932947722},
+  {name: "Akbank Derince/İzmit Şubesi", lat: 40.75506915679498, lng: 29.831330306847995},
+  {name: "Türkiye İş Bankası Karamürsel Şubesi", lat: 40.693298344811566, lng: 29.615721912676513},
+  {name: "Qnb Finansbank Bankamatik", lat: 40.693748575709606, lng: 29.615547087069555},
+  {name: "Halkbank Karamürsel Şubesi", lat: 40.69261335632842, lng: 29.616038943094736},
+  {name: "Akbank Karamürsel Şubesi", lat: 40.692384564664685, lng: 29.61627900079704},
+  {name: "Teb Bankamatik", lat: 40.69279637331987, lng: 29.616133983027748},
+  {name: "Ziraat Bankası Karamürsel/Kocaeli Şubesi", lat: 40.692330834704656, lng: 29.61664339466798},
+  {name: "Denizbank- Akbank- İş Bankası Bankamatik", lat: 40.69050356958759, lng: 29.605117931299898},
+  {name: "Yapıkredi Karamürsel Şubesi", lat: 40.693767478556914, lng: 29.615753960706197},
+  {name: "Vakıfbank Karamürsel Şubesi", lat: 40.69372748514921, lng: 29.61564623822671},
+  {name: "Qnb Finansbank Bankamatik", lat: 40.6937529059716, lng: 29.615559066435367},
+  {name: "Garanti BBVA Karamürsel Şubesi", lat: 40.69352178817475, lng: 29.61465458995349},
+  {name: "Yapıkredi Gölcük Şubesi", lat: 40.71856738332589, lng: 29.820535965244343},
+  {name: "Denizbank Gölcük Şubesi", lat: 40.718824284900826, lng: 29.8206583424993},
+  {name: "KuveytTürk Gölcük Şubesi", lat: 40.71898052919939, lng: 29.82072978334194},
+  {name: "AlbarakaTürk Gölcük Şubesi", lat: 40.718814381170276, lng: 29.82029657810432},
+  {name: "Ziraat Bank Gölcük Şubesi", lat: 40.719180645594335, lng: 29.8208158430081},
+  {name: "Teb Gölcük Şubesi", lat: 40.71978725503459, lng: 29.82075140365797},
+  {name: "Akbank Gölcük Şubesi", lat: 40.71990478634817, lng: 29.82080002517828},
+  {name: "Garanti BBVA Gölcük Şubesi", lat: 40.72056566445383, lng: 29.821104601175332},
+  {name: "Halkbank Gölcük Şubesi", lat: 40.72057337976295, lng: 29.822763996417006},
+  {name: "Türkiye İş Bankası Gölcük Şubesi", lat: 40.72053195292644, lng: 29.82239430657079},
+  {name: "Qnb Finansbank Gölcük Şubesi", lat: 40.72042169560375, lng: 29.822140567326855},
+  {name: "Ziraat Bankası Değirmendere Şubesi", lat: 40.71882489009756, lng: 29.782427918026645},
+  {name: "Türkiye İş Bankası Değirmendere Şubesi", lat: 40.719446035466326, lng: 29.78236035919845},
+  {name: "Qnb Finansbank- Denizbank Bankamatik", lat: 40.719710026818376, lng: 29.78256547142747},
+  {name: "Halkbank- Yapıkredi- Akbank- Vakıfbank- Teb- Garanti BBVA Bankamatik", lat: 40.72007427916288, lng: 29.782344950321512},
+  {name: "Akbank Bankamatik", lat: 40.720666672940894, lng: 29.782464814117805},
+  {name: "İş Bankası- Garanti Bankamatik", lat: 40.716947704214476, lng: 29.8196666840813},
+  {name: "Yapıkredi Bankamatik", lat: 40.7169944235287, lng: 29.819679012034257},
+  {name: "Vakıfbank Gölcük Şubesi", lat: 40.71952092058178, lng: 29.820585346619488},
+  {name: "Akbank Bankamatik", lat: 40.71984047968649, lng: 29.82078105210825},
+  {name: "Halkbank Gölcük Donanma Uydu Şubesi", lat: 40.710821520503345, lng: 29.901484258438668},
+  {name: "Denizbank- İş Bankası Bankamatik", lat: 40.7124816021779, lng: 29.917978874838145},
+  {name: "Ziraat Bankası Bankamatik", lat: 40.71043060958217, lng: 29.92975129219379},
+  {name: "Vakıfbank Bankamatik", lat: 40.71106205046394, lng: 29.92907375960303},
+  {name: "Finansbank Bankamatik", lat: 40.71099951287935, lng: 29.92909177738042},
+  {name: "Ziraat Bankası Başiskele Şubesi", lat: 40.72357813000452, lng: 29.95225554942422},
+  {name: "Ziraat Bankası Bankamatik", lat: 40.73635061814106, lng: 29.96447298466966},
+  {name: "Garanti BBVA Bankamatik", lat: 40.73892292501542, lng: 29.96317916662898},
+  {name: "Vakıfbank Bankamatik", lat: 40.76227887037798, lng: 29.877748864693675},
+  {name: "Qnb Finansbank", lat: 40.76256751198102, lng: 29.923488115561494},
+  {name: "Türkiye İş Bankası Hürriyet Şubesi", lat: 40.76260202978574, lng: 29.923760996463713},
+  {name: "Denizbank İzmit Çarşı Şubesi", lat: 40.76299736899722, lng: 29.924400022450037},
+  {name: "Ziraat Katılım Bankası İzmit Şubesi", lat: 40.76306893112909, lng: 29.92510334264654},
+  {name: "Yapı Kredi İzmit Şubesi", lat: 40.76340528050506, lng: 29.9262286193412},
+  {name: "HSBC", lat: 40.76300188323817, lng: 29.9287615579181},
+  {name: "AlbarakaTürk İzmit Şubesi", lat: 40.76306428829142, lng: 29.928568199286783},
+  {name: "Teb İzmt Şubesi", lat: 40.76317703912759, lng: 29.928536012779215},
+  {name: "Türkiye Finans İzmit Şubesi", lat: 40.763557336198446, lng: 29.929810315557642},
+  {name: "Yapıkredi Bankası", lat: 40.76368318574232, lng: 29.931358953940645},
+  {name: "İng Bank", lat: 40.76373689051597, lng: 29.93168188431192},
+  {name: "Vakıfbank", lat: 40.763596848344804, lng: 29.928528535210507},
+  {name: "Ziraat Bank", lat: 40.76356332806022, lng: 29.928527194104888},
+  {name: "Qnb İzmit Şubesi", lat: 40.76514569442913, lng: 29.928298136286774},
+  {name: "Ziraat Bankası", lat: 40.76644694439554, lng: 29.93242977049403},
+  {name: "İş Bankası", lat: 40.764138204030864, lng: 29.933460805431967},
+  {name: "Garanti BBVA Kocaeli Şubesi", lat: 40.76414484773541, lng: 29.933511840663716},
+  {name: "KuveytTürk Kocaeli Şubesi", lat: 40.76428066674165, lng: 29.9343586489759},
+  {name: "Vakıfbank", lat: 40.76413846115375, lng: 29.93442431589544},
+  {name: "Teb Bankası", lat: 40.763946207959, lng: 29.93448053820974},
+  {name: "Şekerbank", lat: 40.764421718573495, lng: 29.935123541757584},
+  {name: "Vakıf Katılım İzmit Şubesi", lat: 40.76479641464109, lng: 29.93427111775301},
+  {name: "Akbank- İş Bankası Bankamatik", lat: 40.76505836019742, lng: 29.934301434457026},
+  {name: "Vakıfbank- Ziraat Bankası", lat: 40.765026872135756, lng: 29.93425315469567},
+  {name: "Halkbank", lat: 40.762569803438815, lng: 29.936565781622132},
+  {name: "KuveytTürk", lat: 40.76256777187533, lng: 29.93681925036925},
+  {name: "Dünya Katılım Bankası İzmit Şubesi", lat: 40.76256476915221, lng: 29.936764337325506},
+  {name: "Vakıfbank Marmara Bölge Müdürlüğü", lat: 40.762764346842665, lng: 29.937470152043247},
+  {name: "Ziraat Bankası", lat: 40.76274828618004, lng: 29.937538590652508},
+  {name: "Türkiye Finans", lat: 40.76276149130558, lng: 29.93766867778727},
+  {name: "Qnb Finansbank", lat: 40.76273441629059, lng: 29.93788200799073},
+  {name: "Vakıfbank", lat: 40.7626769551168, lng: 29.938299261783097},
+  {name: "Vakıf Katılım", lat: 40.76261949389336, lng: 29.938420644704518},
+  {name: "Fibabanka İzmit Şubesi", lat: 40.762712447744995, lng: 29.94184541453033},
+  {name: "Albaraka İzmit E5 Şubesi", lat: 40.76286722329695, lng: 29.943224118012143},
+  {name: "Akbank İzmit E5 Şubesi", lat: 40.762909339279474, lng: 29.943397300954278},
+  {name: "Teb İzmit Şubesi", lat: 40.7629114141017, lng: 29.94360131026315},
+  {name: "Denizbank İzmit Şubesi", lat: 40.76280551829938, lng: 29.944183520303984},
+  {name: "Albaraka Bankası", lat: 40.76290735099533, lng: 29.94436316191366},
+  {name: "Akbank Şubesi", lat: 40.76289922478237, lng: 29.94446374474982},
+  {name: "Odeobank", lat: 40.762894593280954, lng: 29.944520851130985},
+  {name: "Teb Bankası", lat: 40.76289592350777, lng: 29.9445803430432},
+  {name: "Türkiye İş Bankası İzmit Şubesi", lat: 40.762935025767774, lng: 29.946637782825672},
+  {name: "Garanti BBVA- Yapı Kredi- Qnb Finasbank Bankaları", lat: 40.76402054853299, lng: 29.946991593543878},
+  {name: "Türkiye İş Bankası", lat: 40.762925510063596, lng: 29.94664209925369},
+  {name: "Garanti BBVA Bekirpaşa Şubesi", lat: 40.77045276540159, lng: 29.947803456036056},
+  {name: "Halkbank Bekirpaşa Şubesi", lat: 40.77061651045552, lng: 29.947728540014243},
+  {name: "Yapı Kredi Bekirpaşa Şubesi", lat: 40.77089414529681, lng: 29.94808014892364},
+  {name: "Ziraat Bankası Bekirğaşa Şubesi", lat: 40.77098409401952, lng: 29.94852816341318},
+  {name: "Vakıfbank Bekirpaşa Şubesi", lat: 40.771000344467346, lng: 29.948585830905905},
+  {name: "Qnb- Şekerbank- Ing Bank- Ziraat Bankası- İş Bankası", lat: 40.771947201450786, lng: 29.94968878802845},
+  {name: "Türkiye Finans", lat: 40.77209238490756, lng: 29.950118914468465},
+  {name: "Akbank Bekirpaşa Şubesi", lat: 40.772461028939944, lng: 29.95094340471797},
+  {name: "KuveytTürk Bekirpaşa Şubesi", lat: 40.77273629406814, lng: 29.952416956447053},
+  {name: "Teb Bekirpaşa Şubesi", lat: 40.77278800129928, lng: 29.95259523761959},
+  {name: "Denizbank Bekirpaşa Şubesi", lat: 40.77283396324853, lng: 29.952855072935744},
+  {name: "Ptt Bank", lat: 40.77209405673183, lng: 29.954536917194424},
+  {name: "Ziraat Bank- İş Bankası- Akbank- Qnb Finansbank- Halkbank - Yapıkredi- Teb Bankamatikleri", lat: 40.82378935151043, lng: 29.921280869649728},
+  {name: "Burgan Bank İzmit Şubesi", lat: 40.76749783537768, lng: 29.966314109572963},
+  {name: "Ziraat Bankası Yahyakaptan Şubesi", lat: 40.767480632987414, lng: 29.966624339277722},
+  {name: "Vakıf Bank Yahyakaptan Şubesi", lat: 40.7676035855136, lng: 29.966104867505244},
+  {name: "Türkiye İş Bankası Yahyakaptan Şubesi", lat: 40.76791141363891, lng: 29.965605397747904},
+  {name: "Akbank Bankamatik", lat: 40.763703448238445, lng: 29.999706614794917},
+  {name: "Akbank İzmit Sanayi Şubesi", lat: 40.74636819710887, lng: 29.94665066902998},
+  {name: "Ziraat İzmit Sanayi Şubesi", lat: 40.74635620410903, lng: 29.946963066877174},
+  {name: "Garanti BBVA İzmit Sanayi Şubesi", lat: 40.74631149879747, lng: 29.947242016609454},
+  {name: "Halkbank İzmit Sanayi Şubesi", lat: 40.74641087032699, lng: 29.947523139397806},
+  {name: "Türkiye İş Bankası İzmit Sanayi Şubesi", lat: 40.74629410855064, lng: 29.948297590373773},
+  {name: "Yapı Kredi Bankası İzmit Sanayi Şubesi", lat: 40.7491596422793, lng: 29.952199270147453},
+  {name: "Qnb Finansbank İzmit Sanayi Şubesi", lat: 40.749048682396364, lng: 29.954610377629002},
+  {name: "Garanti BBVA Bankamatik", lat: 40.7389477495145, lng: 29.963222787533148},
+  {name: "Ziraat Bankası Bankamatik", lat: 40.736386709848325, lng: 29.964469411382442},
+  {name: "Vakıfbank Sanayi Mahallesi Şubesi", lat: 40.74959757514491, lng: 29.9512187617135},
+  {name: "Garanti BBVA Şubesi", lat: 40.753253383175384, lng: 30.02239932579595},
+  {name: "Halkbank Kartepe Şubesi", lat: 40.75321769135311, lng: 30.022505818722415},
+  {name: "Türkiye İş Bankası Köseköy Şubesi", lat: 40.75321807564296, lng: 30.022660578649642},
+  {name: "Yapıkredi Kartepe Şubesi", lat: 40.75285326114043, lng: 30.025326242935947},
+  {name: "Akbank Bankamatik", lat: 40.752803726911445, lng: 30.025493702292184},
+  {name: "Vakıfbank Kartepe Şubesi", lat: 40.75270074665213, lng: 30.026255153338994},
+  {name: "Ziraat Bankası Kartepe Şubesi", lat: 40.754357771562674, lng: 30.02314580410243},
+  {name: "Halkbank Kartepe Şubesi", lat: 40.744090644071605, lng: 30.05040609408923},
+  {name: "Akbank İzmit Şubesi", lat: 40.76334591112498, lng: 29.996915815797664},
+    {name: "Türkiye İş Bankası Kandıra Şubesi", lat: 41.06953941856796, lng: 30.15323945478375},
+  {name: "Denizbank Kandıra Şubesi", lat: 41.07002390463876, lng: 30.152299047393434},
+  {name: "Halkbank Kandıra Şubesi", lat: 41.0705604053797, lng: 30.152387074776957},
+  {name: "Ziraat Bankası Kandıra Şubesi", lat: 41.070626720698925, lng: 30.15235775380001},
+  {name: "VakıfBank Kandıra Şubesi", lat: 41.07155719533406, lng: 30.152214019752495}
+    ];
+    const stations = [
+     {name: "Opet", lat: 40.77588350668889, lng: 29.377865906931255},
+      {name: "Petrol Ofisi", lat: 40.77024847075021, lng: 29.39831445933614},
+      {name: "Petrol Ofisi", lat: 40.784177303530974, lng: 29.39116824317921},
+      {name: "Opet", lat: 40.78524763245731, lng: 29.388327383722586},
+      {name: "Shell", lat: 40.78041335637758, lng: 29.40766383846259},
+      {name: "Petrol Ofisi", lat: 40.78267445972862, lng: 29.412173982723296},
+      {name: "Petrol Ofisi", lat: 40.78366991551724, lng: 29.413141789054844},
+      {name: "Petrol Ofisi", lat: 40.794621972003064, lng: 29.368145369086964},
+      {name: "Opet", lat: 40.804924024988125, lng: 29.3671097985754},
+      {name: "class", lat: 40.809900689092025, lng: 29.369937135966115},
+      {name: "Türkiye Petrolleri", lat: 40.79252778992923, lng: 29.37493694705756},
+      {name: "Alpet", lat: 40.78782219765328, lng: 29.36573602545334},
+      {name: "Shell", lat: 40.79084299763942, lng: 29.367434264593513},
+      {name: "opet", lat: 40.78656114308351, lng: 29.423478353533078},
+      {name: "Shell", lat: 40.789887500945014, lng: 29.426488787029626},
+      {name: "Eva", lat: 40.792082882751195, lng: 29.402232766669428},
+      {name: "Aytemiz", lat: 40.80068447973308, lng: 29.38779607156155},
+      {name: "opet", lat: 40.79593836177838, lng: 29.401920752066136},
+      {name: "Total Energies", lat: 40.79547942041012, lng: 29.407929839873955},
+      {name: "Bp", lat: 40.79520461988316, lng: 29.433700968120096},
+      {name: "Opet", lat: 40.80512334543797, lng: 29.433597975807018},
+      {name: "Bp", lat: 40.81144500377809, lng: 29.421935769334564},
+      {name: "Opet", lat: 40.81419987680609, lng: 29.43177316456717},
+      {name: "Shell", lat: 40.814576057314135, lng: 29.41742173774509},
+      {name: "Aytemiz", lat: 40.819887015410515, lng: 29.415033493618107},
+      {name: "Opet", lat: 40.79106175917757, lng: 29.423934084992553},
+      {name: "Aytemiz", lat: 40.79519262114004, lng: 29.4359159998213},
+      {name: "Lukoil", lat: 40.797340775052476, lng: 29.44201414543118},
+      {name: "Shell", lat: 40.803120947171045, lng: 29.440224711589984},
+      {name: "Opet", lat: 40.80512699243109, lng: 29.43360635476953},
+      {name: "Shell", lat: 40.813368582192005, lng: 29.438894066712685},
+      {name: "Opet", lat: 40.81980163382739, lng: 29.444596668285925},
+      {name: "Aytemiz", lat: 40.8135395720979, lng: 29.43182425313985},
+      {name: "Opet", lat: 40.81419323039344, lng: 29.431784020003526},
+      {name: "Total Energies", lat: 40.823611526595776, lng: 29.432609271228486},
+      {name: "Bp", lat: 40.81144094364037, lng: 29.421933890572227},
+      {name: "Shell", lat: 40.814567521219885, lng: 29.417421301497832},
+      {name: "Aytemiz", lat: 40.819887015410515, lng: 29.415036562021033},
+      {name: "Petline", lat: 40.82254653819234, lng: 29.415156093830504},
+      {name: "Petrol Ofisi", lat: 40.81093957036416, lng: 29.45544937094726},
+      {name: "Shell", lat: 40.809427453846325, lng: 29.460377584785732},
+      {name: "Opet", lat: 40.80304780941732, lng: 29.46049136565101},
+      {name: "Petrol Ofisi", lat: 40.80074314053774, lng: 29.468163358664754},
+      {name: "Total Energies", lat: 40.80810084739244, lng: 29.378203314387306},
+      {name: "Moil", lat: 40.801694474927004, lng: 29.46666260236069},
+      {name: "Aytemiz", lat: 40.80399066513735, lng: 29.464129029760294},
+      {name: "Opet", lat: 40.92880952790994, lng: 29.43968133057992},
+      {name: "Opet", lat: 40.92859877709317, lng: 29.435747239689043},
+      {name: "Petrol Ofisi", lat: 40.885671389104665, lng: 29.413974981857},
+      {name: "Petrol Ofisi", lat: 40.88705653946443, lng: 29.493479930054804},
+      {name: "Petrol Ofisi", lat: 40.774286116560674, lng: 29.51993490953813},
+      {name: "Petrol Ofisi", lat: 40.779397263677666, lng: 29.544189183671588},
+      {name: "Petrol Ofisi", lat: 40.78761316555801, lng: 29.532440394765235},
+      {name: "Petrol Ofisi", lat: 40.80563004872753, lng: 29.49597854636376},
+      {name: "Opet", lat: 40.807518275662304, lng: 29.505745381014258},
+      {name: "Shell", lat: 40.809641787693, lng: 29.508743835026337},
+      {name: "Türkiye Petrolleri", lat: 40.86746923195145, lng: 29.470958947159676},
+      {name: "Petrol Ofisi", lat: 40.77428604343285, lng: 29.51994560092676},
+      {name: "Petrol Ofisi", lat: 40.77939112966072, lng: 29.544211587224037},
+      {name: "Petrol Ofisi", lat: 40.7876145920598, lng: 29.53242591490648},
+      {name: "Opet", lat: 40.81005064745819, lng: 29.565538357593365},
+      {name: "Socar", lat: 40.85056898615488, lng: 29.53931734055679},
+      {name: "Türkiye Petrolleri", lat: 40.86747055626693, lng: 29.470973314983386},
+      {name: "Petrol Ofisi", lat: 40.87304584038133, lng: 29.427158659823455},
+      {name: "Türkiye Petrolleri", lat: 40.80180732375694, lng: 29.52668318495229},
+      {name: "Termo", lat: 40.789339653099105, lng: 29.614581786488966},
+      {name: "Aytemiz", lat: 40.78571861950279, lng: 29.620540674144593},
+      {name: "Alpet", lat: 40.77923402704879, lng: 29.663582303579346},
+      {name: "Total Energies", lat: 40.77918105237165, lng: 29.666683261083392},
+      {name: "Shell", lat: 40.77905626533652, lng: 29.670616293283256},
+      {name: "Aytemiz", lat: 40.77913270829445, lng: 29.685375271652358},
+      {name: "Eses", lat: 40.77836020393463, lng: 29.692511292098178},
+      {name: "Opet", lat: 40.77716220643391, lng: 29.712133053474407},
+      {name: "Türkiye Petrolleri", lat: 40.77674646337238, lng: 29.71833755905794},
+      {name: "Petrol Ofisi", lat: 40.776050526987234, lng: 29.71938610850143},
+      {name: "Petrol Ofisi", lat: 40.775846277247744, lng: 29.720848344820993},
+      {name: "Class", lat: 40.77625503600051, lng: 29.721908724391362},
+      {name: "Shell", lat: 40.7753109554949, lng: 29.72429242909176},
+      {name: "Opet", lat: 40.77280407904923, lng: 29.740500912911582},
+      {name: "Opet", lat: 40.773889657326606, lng: 29.74555995796354},
+      {name: "Türkiye Petrolleri", lat: 40.77248479511736, lng: 29.754832791984892},
+      {name: "Bp", lat: 40.77310882307324, lng: 29.761883962818416},
+      {name: "Shell", lat: 40.76793423916988, lng: 29.757978035853526},
+      {name: "Shell", lat: 40.76596979754528, lng: 29.776745300176103},
+      {name: "Opet", lat: 40.76542850864344, lng: 29.777154919869545},
+      {name: "Aytemiz", lat: 40.761370206709934, lng: 29.785421829603653},
+      {name: "Total Energies", lat: 40.758373601103045, lng: 29.797228066346946},
+      {name: "Total Energies", lat: 40.75872157171968, lng: 29.79740608383784},
+      {name: "Türkiye Petrolleri", lat: 40.75726832396109, lng: 29.802124795009043},
+      {name: "Opet", lat: 40.75713377227383, lng: 29.803311002120928},
+      {name: "Lukoil", lat: 40.75770504887342, lng: 29.80385615376191},
+      {name: "Petrol Ofisi", lat: 40.75755772149279, lng: 29.80506518070776},
+      {name: "Total Energies", lat: 40.77689447110622, lng: 29.821801427505978},
+      {name: "Opet", lat: 40.774720816564, lng: 29.803229173450568},
+      {name: "Bp", lat: 40.77056248503377, lng: 29.797857932272887},
+      {name: "Petrol Ofisi", lat: 40.76900928188909, lng: 29.79948016397575},
+      {name: "Petrol Ofisi", lat: 40.75712002361979, lng: 29.838496972443174},
+      {name: "Sunoil", lat: 40.75743781924787, lng: 29.839528889764},
+      {name: "Shell", lat: 40.757688609077675, lng: 29.84045161457763},
+      {name: "Shell", lat: 40.7616066516212, lng: 29.85137233001602},
+      {name: "Bp", lat: 40.76438400813699, lng: 29.877382729747506},
+      {name: "Petrol Ofisi", lat: 40.76301596383926, lng: 29.888498113541193},
+      {name: "Opet", lat: 40.762013158296185, lng: 29.920026726820883},
+      {name: "Aytemiz", lat: 40.76182688741866, lng: 29.926694230704495},
+      {name: "Shell", lat: 40.756068944089066, lng: 29.945347629724385},
+      {name: "Petrol Ofisi", lat: 40.76287389799541, lng: 29.947499224931835},
+      {name: "Opet", lat: 40.75148587382509, lng: 29.94977711302416},
+      {name: "Petrol Ofisi", lat: 40.74384570622924, lng: 29.94404027235672},
+      {name: "Bp", lat: 40.73986857241061, lng: 29.94290213190681},
+      {name: "Opet", lat: 40.737263805232786, lng: 29.955739162641304},
+      {name: "Opet", lat: 40.74477983719133, lng: 29.9587588821898},
+      {name: "Total Energies", lat: 40.74775947511549, lng: 29.957580164716862},
+      {name: "Petrol Ofisi", lat: 40.748596305483986, lng: 29.954590073551763},
+      {name: "Opet", lat: 40.76219197616693, lng: 29.95632309183019},
+      {name: "Shell", lat: 40.76282472734075, lng: 29.95786899933603},
+      {name: "Bp", lat: 40.76381283846113, lng: 29.9578815395777},
+      {name: "Türkiye Petrolleri", lat: 40.767318468344044, lng: 29.959385648639493},
+      {name: "Petrol Ofisi", lat: 40.76290814140683, lng: 29.964310032500936},
+      {name: "Petrol Ofisi", lat: 40.76792218348771, lng: 29.966848154496375},
+      {name: "Opet", lat: 40.760281770626236, lng: 29.973676213054805},
+      {name: "Total Energies", lat: 40.76034778889822, lng: 29.973306832819215},
+      {name: "Sunpet", lat: 40.747355921670284, lng: 29.97106121240638},
+      {name: "Opet", lat: 40.79143593261864, lng: 29.9803796120207},
+      {name: "Bp", lat: 40.75273182500459, lng: 30.025891793463373},
+      {name: "Petrol Ofisi", lat: 40.7523833446491, lng: 30.028261017124343},
+      {name: "Opet", lat: 40.731361426910105, lng: 29.95551403354272},
+      {name: "Petrol Ofisi", lat: 40.722314194391025, lng: 29.994013179201318},
+      {name: "Petrol Ofisi", lat: 40.69459032228349, lng: 29.95812055363723},
+      {name: "Shell", lat: 40.713297115261085, lng: 29.91987758421446},
+      {name: "Petrol Ofisi", lat: 40.70864057760896, lng: 29.89901570746767},
+      {name: "Opet", lat: 40.708698002892554, lng: 29.89520234431931},
+      {name: "Shell", lat: 40.73087144740486, lng: 30.062665625284854},
+      {name: "Petrol Ofisi", lat: 40.70811730397879, lng: 29.846401671070456},
+      {name: "Opet", lat: 40.716957781036484, lng: 30.130983805350528},
+      {name: "Petrol Ofisi", lat: 40.72473593429255, lng: 30.057757374670352},
+      {name: "Total Energies", lat: 40.79548155190412, lng: 30.07846839914019},
+      {name: "Bp", lat: 40.71563008507245, lng: 29.830989579331685},
+      {name: "Total Energies", lat: 40.71516656002945, lng: 29.830742816095547},
+      {name: "Shell", lat: 40.716612636421786, lng: 29.809213319796864},
+      {name: "Petrol Ofisi", lat: 40.71788561299985, lng: 29.79477814967295},
+      {name: "Opet", lat: 40.71799720738283, lng: 29.76667344816735},
+      {name: "Petrol Ofisi", lat: 40.71605595058837, lng: 29.7523382197451},
+      {name: "Shell", lat: 40.701232186279746, lng: 29.669556629977833},
+      {name: "Opet", lat: 40.698103451570745, lng: 29.655239681857378},
+      {name: "Türkiye Petrolleri", lat: 40.697554439367735, lng: 29.652525557413604},
+      {name: "Go", lat: 40.690517586207086, lng: 29.6053635768931}
+    ];
+    const terminals = [
+     {name: "Gebze Terminali", lat: 40.794882, lng: 29.45952},
+      {name: "Gölcük Otogar", lat: 40.710408, lng: 29.840199},
+      {name: "İzmit Terminali", lat: 40.776095, lng: 29.974291},
+      {name: "Karamürsel Terminali", lat: 40.691259182320366, lng: 29.61741046982938}
+    ];
+
+  // Harita ve prestijli daireler
+  let map;
+  let prestigiousCircles = [];
+
+  // İkonlar (renklerle ayrım)
+  const icons = {
+    location: L.icon({iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png', iconSize: [25,41], iconAnchor: [12,41]}),
+    hospital: L.icon({iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png', iconSize: [25,41], iconAnchor: [12,41]}),
+    bakery: L.icon({iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png', iconSize: [25,41], iconAnchor: [12,41]}),
+    bank: L.icon({iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png', iconSize: [25,41], iconAnchor: [12,41]}),
+    station: L.icon({iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png', iconSize: [25,41], iconAnchor: [12,41]}),
+    terminal: L.icon({iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png', iconSize: [25,41], iconAnchor: [12,41]}),
+  };
+
+  function initMap() {
+    map = L.map('map').setView([40.785, 29.405], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Marker ekle
+    addMarkers(locations, icons.location);
+    addMarkers(hospitals, icons.hospital);
+    addMarkers(bakeries, icons.bakery);
+    addMarkers(banks, icons.bank);
+    addMarkers(stations, icons.station);
+    addMarkers(terminals, icons.terminal);
+
+    // Prestijli alanları hesapla ve göster
+    calculateAndShowPrestigiousAreas();
+  }
+
+  function addMarkers(dataArray, icon) {
+    dataArray.forEach(item => {
+      L.marker([item.lat, item.lng], {icon}).addTo(map).bindPopup(`<strong>${item.name}</strong>`);
+    });
+  }
+
+  // Haversine mesafe (metre)
+  function haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // metre
+    const φ1 = lat1 * Math.PI/180;
+    const φ2 = lat2 * Math.PI/180;
+    const Δφ = (lat2-lat1) * Math.PI/180;
+    const Δλ = (lon2-lon1) * Math.PI/180;
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+  }
+
+  // Kategori ağırlıkları
+  const categoryWeights = {
+    'Hastane': 5,
+    'Toplanma Alanı': 3,
+    'Banka': 2,
+    'Fırın': 1,
+    'Benzin İstasyonu': 2,
+    'Terminal': 3
+  };
+
+  // Prestij puanı hesaplama ve gösterme
+  function calculateAndShowPrestigiousAreas() {
+    const allPoints = [];
+    locations.forEach(p => allPoints.push({...p, category: 'Toplanma Alanı'}));
+    hospitals.forEach(p => allPoints.push({...p, category: 'Hastane'}));
+    bakeries.forEach(p => allPoints.push({...p, category: 'Fırın'}));
+    banks.forEach(p => allPoints.push({...p, category: 'Banka'}));
+    stations.forEach(p => allPoints.push({...p, category: 'Benzin İstasyonu'}));
+    terminals.forEach(p => allPoints.push({...p, category: 'Terminal'}));
+
+    const proximityThreshold = 1000; // metre
+    const minPrestigeScore = 18;
+
+    const scoredPoints = allPoints.map(point => {
+      let score = 0;
+      allPoints.forEach(other => {
+        if(point === other) return;
+        const dist = haversineDistance(point.lat, point.lng, other.lat, other.lng);
+        if(dist <= proximityThreshold && point.category !== other.category) {
+          score += categoryWeights[other.category] || 1;
+        }
+      });
+      return {...point, score};
+    });
+
+    const prestigious = scoredPoints.filter(p => p.score >= minPrestigeScore);
+
+    // Önceki daireleri temizle
+    prestigiousCircles.forEach(c => map.removeLayer(c));
+    prestigiousCircles = [];
+
+    // Listeyi güncelle
+    const container = document.getElementById('prestigious-areas-content');
+    if(prestigious.length === 0) {
+      container.innerHTML = '<p>Prestijli alan bulunamadı.</p>';
+    } else {
+      let html = '<ul>';
+      prestigious.forEach(p => {
+        html += `<li><strong>${p.name}</strong> (${p.category}) — Puan: ${p.score}</li>`;
+      });
+      html += '</ul>';
+      container.innerHTML = html;
+
+      // Haritaya daire ekle
+      prestigious.forEach(p => {
+        const circle = L.circle([p.lat, p.lng], {
+          color: 'red',
+          weight: 3,
+          fillColor: '#f03',
+          fillOpacity: 0.3,
+          radius: 100
+        }).addTo(map).bindPopup(`<strong>Prestijli Alan</strong><br>${p.name} (${p.category})<br>Puan: ${p.score}`);
+        prestigiousCircles.push(circle);
+      });
+    }
+  }
+
+  window.onload = () => {
+    initMap();
+  };
+</script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
